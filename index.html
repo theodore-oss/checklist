@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklists d'ouverture — Rosario</title>
+<style>
+  :root {
+    --ink: #1c1a17;
+    --paper: #faf7f2;
+    --card: #ffffff;
+    --line: #e4ddd1;
+    --accent: #b3401f;
+    --muted: #8a8378;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 48px 16px;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  h1 { font-size: 24px; margin: 0 0 32px; text-align: center; }
+  a.card {
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 14px;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  a.card:hover { border-color: var(--accent); }
+  a.card span {
+    display: block;
+    font-weight: 400;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 32px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Rosario · Checklists quotidiennes</div>
+    <h1>Ouverture</h1>
+    <a class="card" href="first-floor.html">Opening First Floor<span>Rez-de-chaussée</span></a>
+    <a class="card" href="second-floor.html">Opening Second Floor<span>Étage</span></a>
+    <a class="card" href="tapas-bar.html">Opening Tapas Bar<span>Bar à tapas</span></a>
+    <footer>Domingo — Rosario</footer>
+  </div>
+</body>
+</html>
