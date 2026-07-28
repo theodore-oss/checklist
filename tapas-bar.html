@@ -567,6 +567,44 @@
     return lines.join("\n");
   }
 
+  function buildReportHtml() {
+    const dateVal = dateInput.value || todayISO();
+    const boxes = allCheckboxes();
+    const done = boxes.filter(b => b.checked).length;
+    const total = boxes.length;
+    let html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c1a17;">';
+    html += '<h2 style="margin:0 0 8px;">' + LIST_TITLE + ' — ' + dateVal + '</h2>';
+    html += '<p style="margin:0 0 4px;"><strong>Employé :</strong> ' + (employeeInput.value || '—') + '</p>';
+    html += '<p style="margin:0 0 4px;"><strong>Service :</strong> ' + (serviceInput.value || '—') + '</p>';
+    html += '<p style="margin:0 0 16px;"><strong>Avancement :</strong> ' + done + ' / ' + total + ' tâches faites</p>';
+    Object.entries(DATA).forEach(([sectionName, rawTasks]) => {
+      html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">' + sectionName + '</h3>';
+      const tasks = rawTasks.map(normalizeTask);
+      const secKey = sectionName.replace(/\s+/g,"_");
+      tasks.forEach((task, i) => {
+        const cb = document.getElementById("t_" + secKey + "_" + i);
+        const checked = !!(cb && cb.checked);
+        const color = checked ? '#1c1a17' : '#c0392b';
+        const weight = checked ? 'normal' : '700';
+        const mark = checked ? '✓' : '✗';
+        html += '<div style="color:' + color + ';font-weight:' + weight + ';margin:2px 0;">' + mark + ' ' + task.en + '</div>';
+        (task.sub || []).forEach((subItem, j) => {
+          const subCb = document.getElementById("t_" + secKey + "_" + i + "_s" + j);
+          const subChecked = !!(subCb && subCb.checked);
+          const subColor = subChecked ? '#8a8378' : '#c0392b';
+          const subWeight = subChecked ? 'normal' : '700';
+          const subMark = subChecked ? '✓' : '✗';
+          html += '<div style="color:' + subColor + ';font-weight:' + subWeight + ';margin:2px 0 2px 20px;font-size:13px;">' + subMark + ' ' + subItem.en + '</div>';
+        });
+      });
+    });
+    const commentsVal = (commentsInput.value || "").trim();
+    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Commentaires</h3>';
+    html += '<div>' + (commentsVal ? commentsVal.replace(/</g,'&lt;') : '(aucun)') + '</div>';
+    html += '</div>';
+    return html;
+  }
+
   function isComplete() {
     const boxes = allCheckboxes();
     return boxes.length > 0 && boxes.every(b => b.checked);
@@ -612,7 +650,7 @@
     statusMsg.textContent = I18N[currentLang].alertSending;
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "alert", subject: subjectPlain, body: bodyPlain }),
+      body: JSON.stringify({ action: "alert", subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
     }).then(() => {
       statusMsg.textContent = !complete ? I18N[currentLang].alertMissing : I18N[currentLang].alertInformed;
     }).catch(() => {
