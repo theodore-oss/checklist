@@ -309,9 +309,71 @@
     cursor: pointer;
     font-family: inherit;
   }
+
+  .pin-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    padding: 24px;
+  }
+  .pin-screen.hidden { display: none; }
+  .pin-wrap { max-width: 320px; width: 100%; text-align: center; }
+  .pin-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .pin-title { font-size: 22px; margin: 0 0 6px; }
+  .pin-sub { color: var(--muted); font-size: 13.5px; margin: 0 0 24px; }
+  .pin-input {
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.5em;
+    font-size: 24px;
+    padding: 14px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--ink);
+    margin-bottom: 14px;
+    font-family: inherit;
+  }
+  .pin-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .pin-submit {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .pin-error { color: var(--accent); font-size: 12.5px; margin-top: 12px; min-height: 16px; }
 </style>
 </head>
 <body>
+
+<div class="pin-screen" id="pinScreen">
+  <div class="pin-wrap">
+    <div class="pin-eyebrow" id="pinEyebrowText">Rosario · Accès manager</div>
+    <h2 class="pin-title" id="pinTitleText">Code d'accès</h2>
+    <p class="pin-sub" id="pinSubText">Réservé aux managers</p>
+    <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" class="pin-input" id="pinInput" placeholder="••••">
+    <button type="button" class="pin-submit" id="pinSubmitBtn">Déverrouiller</button>
+    <p class="pin-error" id="pinErrorText"></p>
+  </div>
+</div>
+
 <div class="wrap">
   <header>
     <div class="header-main">
@@ -513,6 +575,12 @@
 
   const I18N = {
     fr: {
+      pinEyebrow: "Rosario · Accès manager",
+      pinTitle: "Code d'accès",
+      pinSub: "Réservé aux managers",
+      pinSubmit: "Déverrouiller",
+      pinPlaceholder: "••••",
+      pinError: "Code incorrect",
       eyebrow: "Rosario · Brief de service",
       title: "Brief de service",
       subtitle: "Rosario — préparation avant service",
@@ -601,6 +669,12 @@
       notFilled: "—",
     },
     en: {
+      pinEyebrow: "Rosario · Manager access",
+      pinTitle: "Access code",
+      pinSub: "Managers only",
+      pinSubmit: "Unlock",
+      pinPlaceholder: "••••",
+      pinError: "Incorrect code",
       eyebrow: "Rosario · Service brief",
       title: "Service brief",
       subtitle: "Rosario — pre-service preparation",
@@ -1611,6 +1685,42 @@
   buildRoles();
   load();
   applyLang(currentLang);
+
+  // ---------- Manager PIN gate ----------
+  (function () {
+    const PIN = "4040";
+    const t = I18N[currentLang];
+    const pinScreen = document.getElementById("pinScreen");
+    const pinInput = document.getElementById("pinInput");
+    const pinSubmitBtn = document.getElementById("pinSubmitBtn");
+    const pinErrorText = document.getElementById("pinErrorText");
+
+    document.getElementById("pinEyebrowText").textContent = t.pinEyebrow;
+    document.getElementById("pinTitleText").textContent = t.pinTitle;
+    document.getElementById("pinSubText").textContent = t.pinSub;
+    document.getElementById("pinSubmitBtn").textContent = t.pinSubmit;
+    pinInput.placeholder = t.pinPlaceholder;
+
+    if (sessionStorage.getItem("rosario_brief_unlocked") === "1") {
+      pinScreen.classList.add("hidden");
+    } else {
+      pinInput.focus();
+    }
+
+    function tryUnlock() {
+      if (pinInput.value === PIN) {
+        sessionStorage.setItem("rosario_brief_unlocked", "1");
+        pinScreen.classList.add("hidden");
+        pinErrorText.textContent = "";
+      } else {
+        pinErrorText.textContent = t.pinError;
+        pinInput.value = "";
+        pinInput.focus();
+      }
+    }
+    pinSubmitBtn.addEventListener("click", tryUnlock);
+    pinInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); tryUnlock(); } });
+  })();
 </script>
 </body>
 </html>
