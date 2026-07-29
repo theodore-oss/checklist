@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checklists d'ouverture — Rosario</title>
+<title>Outils quotidiens — Rosario</title>
 <style>
   :root {
     --ink: #1c1a17;
@@ -32,6 +32,15 @@
     text-align: center;
   }
   h1 { font-size: 24px; margin: 0 0 32px; text-align: center; }
+  .section-title {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 28px 0 10px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
   a.card {
     display: block;
     background: var(--card);
@@ -57,11 +66,14 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="eyebrow">Rosario · Checklists quotidiennes</div>
-    <h1>Ouverture</h1>
+    <div class="eyebrow">Rosario · Outils quotidiens</div>
+    <h1>Outils</h1>
+    <div class="section-title">Ouverture</div>
     <a class="card" href="first-floor.html">Opening First Floor<span>Rez-de-chaussée</span></a>
     <a class="card" href="second-floor.html">Opening Second Floor<span>Étage</span></a>
     <a class="card" href="tapas-bar.html">Opening Tapas Bar<span>Bar à tapas</span></a>
+    <div class="section-title">Avant service</div>
+    <a class="card" href="brief.html">Brief de service<span>Préparation avant service</span></a>
     <footer>Domingo — Rosario</footer>
   </div>
 </body>

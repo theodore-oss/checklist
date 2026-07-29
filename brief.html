@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brief de service — Rosario</title>
+<style>
+  :root {
+    --ink: #1c1a17;
+    --paper: #faf7f2;
+    --card: #ffffff;
+    --line: #e4ddd1;
+    --accent: #b3401f;
+    --accent-soft: #f4e2da;
+    --ok: #4c7a4c;
+    --muted: #8a8378;
+    --success: #2f6d46;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 24px 16px 80px;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header { margin-bottom: 24px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .header-main { min-width: 0; }
+  .lang-switch { display: flex; gap: 4px; flex-shrink: 0; }
+  .lang-switch button {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 5px 9px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .lang-switch button.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .identity { display: grid; gap: 14px; }
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  input[type="date"], input[type="text"], input[type="number"], input[type="time"], select, textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 15px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: inherit;
+  }
+  textarea { min-height: 70px; resize: vertical; line-height: 1.4; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row > div { flex: 1; }
+
+  .toggle-row { display: flex; gap: 8px; }
+  .toggle-row button {
+    flex: 1;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .toggle-row button.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  .group-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .group-card .remove-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+  }
+  .group-number {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .menu-detail { display: none; margin-top: 10px; }
+  .menu-detail.show { display: block; }
+
+  .add-btn {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 8px;
+    border: 1px dashed var(--line);
+    background: transparent;
+    color: var(--accent);
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 4px;
+  }
+
+  .role-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .role-row:last-child { border-bottom: none; }
+  .role-row .role-label {
+    width: 140px;
+    flex-shrink: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: none;
+    letter-spacing: normal;
+  }
+  .role-row input { margin-bottom: 0; }
+
+  .list-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .list-input-row input { margin-bottom: 0; }
+  .list-input-row button {
+    flex-shrink: 0;
+    padding: 0 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .list-items { list-style: none; padding: 0; margin: 0; }
+  .list-items li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .list-items li:last-child { border-bottom: none; }
+  .list-items li button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .list-empty { color: var(--muted); font-size: 13px; font-style: italic; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  button.btn-primary, button.btn-secondary {
+    flex: 1;
+    min-width: 140px;
+    padding: 13px 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-secondary { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .status { font-size: 12.5px; color: var(--ok); text-align: center; margin-top: 10px; min-height: 16px; }
+
+  footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 24px; }
+  .brand-mark { display: block; height: 30px; width: auto; margin: 0 auto 10px; }
+
+  .recap-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    display: none;
+    overflow-y: auto;
+    z-index: 100;
+    padding: 24px 16px 60px;
+  }
+  .recap-screen.visible { display: block; }
+  .recap-wrap { max-width: 640px; margin: 0 auto; }
+  .recap-badge {
+    display: inline-block;
+    background: var(--success);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .recap-title { font-size: 26px; margin: 0 0 4px; }
+  .recap-sub { color: var(--muted); font-size: 14px; margin: 0 0 24px; }
+  .recap-section { margin-bottom: 20px; }
+  .recap-section h3 {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    margin: 0 0 10px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px;
+  }
+  .recap-row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 14.5px; }
+  .recap-row .k { color: var(--muted); }
+  .recap-row .v { font-weight: 600; text-align: right; }
+  .recap-group {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .recap-group .g-title { font-weight: 700; margin-bottom: 4px; }
+  .recap-group .g-line { color: var(--muted); font-size: 13px; }
+  .recap-list { list-style: none; padding: 0; margin: 0; }
+  .recap-list li {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .recap-list li:last-child { border-bottom: none; }
+  .recap-empty { color: var(--muted); font-size: 13.5px; font-style: italic; }
+  .recap-close {
+    display: block;
+    margin: 28px auto 0;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-main">
+      <div class="eyebrow" id="eyebrowText">Rosario · Brief de service</div>
+      <h1 id="pageTitle">Brief de service</h1>
+      <p class="subtitle" id="subtitleText">Rosario — préparation avant service</p>
+    </div>
+    <div class="lang-switch">
+      <button type="button" data-lang="fr">FR</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </header>
+
+  <div class="card identity">
+    <p class="card-title" id="generalTitleText">Général</p>
+    <div class="field">
+      <label for="manager" id="managerLabelText">Nom du manager</label>
+      <select id="manager">
+        <option value="" id="managerDefaultOption">— Sélectionner —</option>
+        <option value="andrea">Andrea</option>
+        <option value="theodore">Théodore</option>
+        <option value="adrien">Adrien</option>
+        <option value="gustavo">Gustavo</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="period" id="periodLabelText">Service</label>
+      <select id="period">
+        <option value="" id="periodDefaultOption">— Sélectionner —</option>
+        <option value="dejeuner" id="periodLunchOption">Déjeuner</option>
+        <option value="diner" id="periodDinnerOption">Dîner</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="date" id="dateLabelText">Date</label>
+      <input type="date" id="date">
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="meteoTitleText">Météo</p>
+    <div class="field">
+      <label for="reservations" id="reservationsLabelText" class="card-subtitle" style="border-top:none;padding-top:0;">Nombre de réservations</label>
+      <input type="number" id="reservations" min="0" placeholder="0">
+    </div>
+    <p class="card-subtitle" id="groupsTitleText" style="margin-top:18px;">Groupes</p>
+    <div id="groupsList"></div>
+    <button type="button" class="add-btn" id="addGroupBtn">+ Ajouter un groupe</button>
+    <p class="card-subtitle" id="vipTitleText" style="margin-top:18px;">VIP</p>
+    <div class="field">
+      <label id="vipToggleLabelText">Y a-t-il des VIP ce service ?</label>
+      <div class="toggle-row">
+        <button type="button" id="vipYesBtn">Oui</button>
+        <button type="button" id="vipNoBtn" class="active">Non</button>
+      </div>
+    </div>
+    <div id="vipSection" style="display:none;">
+      <div id="vipList"></div>
+      <button type="button" class="add-btn" id="addVipBtn">+ Ajouter un VIP</button>
+    </div>
+    <p class="card-subtitle" id="commentTitleText" style="margin-top:18px;">Commentaire</p>
+    <textarea id="commentInput" placeholder="Un commentaire particulier pour ce service ?"></textarea>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="teamTitleText">Organisation des équipes</p>
+    <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px;" id="teamOptionalNoteText">Facultatif — à remplir selon l'équipe du jour</p>
+    <div id="rolesList"></div>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="rupturesTitleText">Ruptures</p>
+    <p class="card-subtitle" id="rupturesCuisineTitleText">Cuisine</p>
+    <div class="list-input-row">
+      <input type="text" id="rupturesCuisineInput" placeholder="Ajouter une rupture...">
+      <button type="button" id="rupturesCuisineAddBtn">+</button>
+    </div>
+    <ul class="list-items" id="rupturesCuisineList"></ul>
+    <p class="card-subtitle" id="rupturesBarTitleText" style="margin-top:18px;">Bar</p>
+    <div class="list-input-row">
+      <input type="text" id="rupturesBarInput" placeholder="Ajouter une rupture...">
+      <button type="button" id="rupturesBarAddBtn">+</button>
+    </div>
+    <ul class="list-items" id="rupturesBarList"></ul>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="pushTitleText">À pousser</p>
+    <p class="card-subtitle" id="pushCuisineTitleText">Cuisine</p>
+    <div class="list-input-row">
+      <input type="text" id="pushCuisineInput" placeholder="Ajouter un item...">
+      <button type="button" id="pushCuisineAddBtn">+</button>
+    </div>
+    <ul class="list-items" id="pushCuisineList"></ul>
+    <p class="card-subtitle" id="pushBarTitleText" style="margin-top:18px;">Bar</p>
+    <div class="list-input-row">
+      <input type="text" id="pushBarInput" placeholder="Ajouter un item...">
+      <button type="button" id="pushBarAddBtn">+</button>
+    </div>
+    <ul class="list-items" id="pushBarList"></ul>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="questionsTitleText">Questions pour tester les équipes</p>
+    <div class="list-input-row">
+      <input type="text" id="questionsInput" placeholder="Ajouter une question...">
+      <button type="button" id="questionsAddBtn">+</button>
+    </div>
+    <ul class="list-items" id="questionsList"></ul>
+  </div>
+
+  <div class="card">
+    <div class="actions">
+      <button class="btn-secondary" id="resetBtn" type="button">Réinitialiser</button>
+      <button class="btn-primary" id="validateBtn" type="button">Valider le brief</button>
+    </div>
+    <div class="status" id="statusMsg"></div>
+  </div>
+
+  <footer>
+    <img class="brand-mark" src="data:image/png;base64,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" alt="Rosario">
+    <span id="footerText">Domingo — Rosario · sauvegarde automatique sur cet appareil</span>
+  </footer>
+</div>
+
+<div class="recap-screen" id="recapScreen">
+  <div class="recap-wrap">
+    <div class="recap-badge" id="recapBadgeText">Brief validé</div>
+    <h2 class="recap-title" id="recapTitleText">Brief de service</h2>
+    <p class="recap-sub" id="recapSubText"></p>
+
+    <div class="recap-section">
+      <h3 id="recapIdentityTitle">Service</h3>
+      <div class="recap-row"><span class="k" id="recapPeriodLabel">Service</span><span class="v" id="recapPeriodValue">—</span></div>
+      <div class="recap-row"><span class="k" id="recapManagerLabel">Manager</span><span class="v" id="recapManagerValue">—</span></div>
+      <div class="recap-row"><span class="k" id="recapDateLabel">Date</span><span class="v" id="recapDateValue">—</span></div>
+    </div>
+
+    <div class="recap-section">
+      <h3 id="recapMeteoTitle">Météo</h3>
+      <div class="recap-row"><span class="k" id="recapReservationsLabel">Réservations</span><span class="v" id="recapReservationsValue">—</span></div>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:14px 0 8px;" id="recapGroupsTitle">Groupes</p>
+      <div id="recapGroups"></div>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:14px 0 8px;" id="recapVipTitle">VIP</p>
+      <div id="recapVips"></div>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:14px 0 8px;" id="recapCommentTitle">Commentaire</p>
+      <p id="recapCommentValue" class="recap-empty">—</p>
+    </div>
+
+    <div class="recap-section">
+      <h3 id="recapTeamTitle">Organisation des équipes</h3>
+      <div id="recapRoles"></div>
+    </div>
+
+    <div class="recap-section">
+      <h3 id="recapRupturesTitle">Ruptures</h3>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:0 0 8px;" id="recapRupturesCuisineTitle">Cuisine</p>
+      <ul class="recap-list" id="recapRupturesCuisine"></ul>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:14px 0 8px;" id="recapRupturesBarTitle">Bar</p>
+      <ul class="recap-list" id="recapRupturesBar"></ul>
+    </div>
+
+    <div class="recap-section">
+      <h3 id="recapPushTitle">À pousser</h3>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:0 0 8px;" id="recapPushCuisineTitle">Cuisine</p>
+      <ul class="recap-list" id="recapPushCuisine"></ul>
+      <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin:14px 0 8px;" id="recapPushBarTitle">Bar</p>
+      <ul class="recap-list" id="recapPushBar"></ul>
+    </div>
+
+    <div class="recap-section">
+      <h3 id="recapQuestionsTitle">Questions pour tester les équipes</h3>
+      <ul class="recap-list" id="recapQuestions"></ul>
+    </div>
+
+    <div class="actions" style="margin-top:24px;">
+      <button class="btn-primary" id="recapSendBtn" type="button">Envoyer par email</button>
+    </div>
+    <div class="status" id="recapStatusMsg"></div>
+
+    <button type="button" class="recap-close" id="recapCloseBtn">Retour au brief</button>
+  </div>
+</div>
+
+<script>
+  const MANAGER_EMAILS = { andrea: "andrea@grupodomingo.io", theodore: "theodore@grupodomingo.io", adrien: "adrien@grupodomingo.io", gustavo: "meauriogustavo9@gmail.com" };
+  const MANAGER_LABELS = { andrea: "Andrea", theodore: "Théodore", adrien: "Adrien", gustavo: "Gustavo" };
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71CiJkrDMhr4r6zLaIOR8vTi076ju760QLlL42UGohQWFq7nnU_kDp_jkH349edyM/exec";
+
+  const ROLES = [
+    { id: "cdr1_etage", fr: "CDR #1 Étage", en: "Floor captain #1 (upstairs)" },
+    { id: "cdr2_etage", fr: "CDR #2 Étage", en: "Floor captain #2 (upstairs)" },
+    { id: "cdr_rdc", fr: "CDR rdc", en: "Floor captain (ground floor)" },
+    { id: "bar_tapas", fr: "Bar à tapas", en: "Tapas bar" },
+    { id: "bar", fr: "Bar", en: "Bar" },
+    { id: "runner1", fr: "Runner 1", en: "Runner 1" },
+    { id: "runner2", fr: "Runner 2", en: "Runner 2" },
+  ];
+
+  const I18N = {
+    fr: {
+      eyebrow: "Rosario · Brief de service",
+      title: "Brief de service",
+      subtitle: "Rosario — préparation avant service",
+      generalTitle: "Général",
+      periodLabel: "Service",
+      periodDefault: "— Sélectionner —",
+      periodLunch: "Déjeuner",
+      periodDinner: "Dîner",
+      managerLabel: "Nom du manager",
+      managerDefault: "— Sélectionner —",
+      dateLabel: "Date",
+      meteoTitle: "Météo",
+      reservationsLabel: "Nombre de réservations",
+      groupsTitle: "Groupes",
+      addGroupBtn: "+ Ajouter un groupe",
+      groupN: (n) => "Groupe " + n,
+      groupPeopleLabel: "Nombre de personnes",
+      groupTimeLabel: "Horaire d'arrivée",
+      groupMenuLabel: "Menu imposé ?",
+      groupMenuYes: "Oui",
+      groupMenuNo: "Non",
+      groupPriceLabel: "Prix (€)",
+      groupPriceTypeLabel: "Ce prix est",
+      groupPricePerPerson: "Par personne",
+      groupPricePerGroup: "Pour le groupe",
+      groupContentLabel: "Contenu du menu",
+      groupRemove: "Retirer",
+      vipTitle: "VIP",
+      vipToggleLabel: "Y a-t-il des VIP ce service ?",
+      vipYes: "Oui",
+      vipNo: "Non",
+      vipAddBtn: "+ Ajouter un VIP",
+      vipN: (n) => "VIP " + n,
+      vipNameLabel: "Nom de la personne",
+      vipTableLabel: "Table",
+      vipTimeLabel: "Heure",
+      vipCommentLabel: "Commentaire",
+      vipCommentPlaceholder: "Un détail particulier pour ce VIP ?",
+      vipRemove: "Retirer",
+      emptyVips: "(aucun VIP)",
+      vipSummaryLine: (table, time) => "Table " + (table || "—") + " — " + (time || "—"),
+      teamTitle: "Organisation des équipes",
+      teamOptionalNote: "Facultatif — à remplir selon l'équipe du jour",
+      commentTitle: "Commentaire",
+      commentPlaceholder: "Un commentaire particulier pour ce service ?",
+      cuisineLabel: "Cuisine",
+      barLabel: "Bar",
+      rupturesTitle: "Ruptures",
+      rupturesPlaceholder: "Ajouter une rupture...",
+      pushTitle: "À pousser",
+      pushPlaceholder: "Ajouter un item...",
+      questionsTitle: "Questions pour tester les équipes",
+      questionsPlaceholder: "Ajouter une question...",
+      resetBtn: "Réinitialiser",
+      validateBtn: "Valider le brief",
+      resetConfirm: "Réinitialiser tout le brief pour cette date ?",
+      footer: "Domingo — Rosario · sauvegarde automatique sur cet appareil",
+      statusSaved: "Sauvegardé automatiquement",
+      statusMissingManager: "Choisis le manager avant de valider.",
+      statusSending: "Envoi en cours…",
+      statusSent: "Brief envoyé par email.",
+      statusFallback: "Connexion impossible — un brouillon d'email a été ouvert à la place.",
+      recapBadge: "Brief validé",
+      recapSub: (mgr, date) => "Rempli par " + mgr + " — " + date,
+      recapIdentityTitle: "Service",
+      recapPeriodLabel: "Service",
+      recapManagerLabel: "Manager",
+      recapDateLabel: "Date",
+      recapMeteoTitle: "Météo",
+      recapReservationsLabel: "Réservations",
+      recapGroupsTitle: "Groupes",
+      recapVipTitle: "VIP",
+      recapTeamTitle: "Organisation des équipes",
+      recapCommentTitle: "Commentaire",
+      recapRupturesTitle: "Ruptures",
+      recapPushTitle: "À pousser",
+      recapQuestionsTitle: "Questions pour tester les équipes",
+      recapSendBtn: "Envoyer par email",
+      recapClose: "Retour au brief",
+      emptyList: "(aucun)",
+      emptyGroups: "(aucun groupe)",
+      emptyComment: "(aucun commentaire)",
+      groupSummary: (people, time) => people + " pers. — arrivée " + (time || "—"),
+      groupMenuSummaryYes: (price, priceType) => "Menu imposé — " + (price ? price + " € " + (priceType === "groupe" ? "(pour le groupe)" : "(par personne)") : "prix non précisé"),
+      groupMenuSummaryNo: "Pas de menu imposé",
+      notFilled: "—",
+    },
+    en: {
+      eyebrow: "Rosario · Service brief",
+      title: "Service brief",
+      subtitle: "Rosario — pre-service preparation",
+      generalTitle: "General",
+      periodLabel: "Service",
+      periodDefault: "— Select —",
+      periodLunch: "Lunch",
+      periodDinner: "Dinner",
+      managerLabel: "Manager name",
+      managerDefault: "— Select —",
+      dateLabel: "Date",
+      meteoTitle: "Forecast",
+      reservationsLabel: "Number of reservations",
+      groupsTitle: "Groups",
+      addGroupBtn: "+ Add a group",
+      groupN: (n) => "Group " + n,
+      groupPeopleLabel: "Number of people",
+      groupTimeLabel: "Arrival time",
+      groupMenuLabel: "Set menu?",
+      groupMenuYes: "Yes",
+      groupMenuNo: "No",
+      groupPriceLabel: "Price (€)",
+      groupPriceTypeLabel: "This price is",
+      groupPricePerPerson: "Per person",
+      groupPricePerGroup: "For the whole group",
+      groupContentLabel: "Menu content",
+      groupRemove: "Remove",
+      vipTitle: "VIP",
+      vipToggleLabel: "Any VIPs this service?",
+      vipYes: "Yes",
+      vipNo: "No",
+      vipAddBtn: "+ Add a VIP",
+      vipN: (n) => "VIP " + n,
+      vipNameLabel: "Guest name",
+      vipTableLabel: "Table",
+      vipTimeLabel: "Time",
+      vipCommentLabel: "Comment",
+      vipCommentPlaceholder: "Anything specific about this VIP?",
+      vipRemove: "Remove",
+      emptyVips: "(no VIP)",
+      vipSummaryLine: (table, time) => "Table " + (table || "—") + " — " + (time || "—"),
+      teamTitle: "Team organisation",
+      teamOptionalNote: "Optional — fill in based on today's team",
+      commentTitle: "Comment",
+      commentPlaceholder: "Anything specific to flag for this service?",
+      cuisineLabel: "Kitchen",
+      barLabel: "Bar",
+      rupturesTitle: "Stockouts",
+      rupturesPlaceholder: "Add a stockout...",
+      pushTitle: "To push",
+      pushPlaceholder: "Add an item...",
+      questionsTitle: "Questions to quiz the team",
+      questionsPlaceholder: "Add a question...",
+      resetBtn: "Reset",
+      validateBtn: "Validate brief",
+      resetConfirm: "Reset the whole brief for this date?",
+      footer: "Domingo — Rosario · auto-saved on this device",
+      statusSaved: "Auto-saved",
+      statusMissingManager: "Pick the manager before validating.",
+      statusSending: "Sending…",
+      statusSent: "Brief sent by email.",
+      statusFallback: "Couldn't connect — an email draft was opened instead.",
+      recapBadge: "Brief validated",
+      recapSub: (mgr, date) => "Filled by " + mgr + " — " + date,
+      recapIdentityTitle: "Service",
+      recapPeriodLabel: "Service",
+      recapManagerLabel: "Manager",
+      recapDateLabel: "Date",
+      recapMeteoTitle: "Forecast",
+      recapReservationsLabel: "Reservations",
+      recapGroupsTitle: "Groups",
+      recapVipTitle: "VIP",
+      recapTeamTitle: "Team organisation",
+      recapCommentTitle: "Comment",
+      recapRupturesTitle: "Stockouts",
+      recapPushTitle: "To push",
+      recapQuestionsTitle: "Questions to quiz the team",
+      recapSendBtn: "Send by email",
+      recapClose: "Back to brief",
+      emptyList: "(none)",
+      emptyGroups: "(no group)",
+      emptyComment: "(no comment)",
+      groupSummary: (people, time) => people + " people — arriving " + (time || "—"),
+      groupMenuSummaryYes: (price, priceType) => "Set menu — " + (price ? price + " € " + (priceType === "groupe" ? "(for the group)" : "(per person)") : "price not set"),
+      groupMenuSummaryNo: "No set menu",
+      notFilled: "—",
+    },
+  };
+
+  let currentLang = localStorage.getItem("rosario_brief_lang") || "fr";
+  let groupCount = 0;
+  let vipCount = 0;
+  let vipEnabled = false;
+  let rupturesCuisine = [];
+  let rupturesBar = [];
+  let pushCuisine = [];
+  let pushBar = [];
+  let questions = [];
+
+  const managerInput = document.getElementById("manager");
+  const dateInput = document.getElementById("date");
+  const periodInput = document.getElementById("period");
+  const reservationsInput = document.getElementById("reservations");
+  const groupsList = document.getElementById("groupsList");
+  const vipYesBtn = document.getElementById("vipYesBtn");
+  const vipNoBtn = document.getElementById("vipNoBtn");
+  const vipSection = document.getElementById("vipSection");
+  const vipList = document.getElementById("vipList");
+  const rolesList = document.getElementById("rolesList");
+  const commentInput = document.getElementById("commentInput");
+  const statusMsg = document.getElementById("statusMsg");
+  const recapScreen = document.getElementById("recapScreen");
+
+  function setVipEnabled(isYes) {
+    vipEnabled = isYes;
+    vipYesBtn.classList.toggle("active", isYes);
+    vipNoBtn.classList.toggle("active", !isYes);
+    vipSection.style.display = isYes ? "block" : "none";
+  }
+  vipYesBtn.addEventListener("click", () => { setVipEnabled(true); save(); });
+  vipNoBtn.addEventListener("click", () => { setVipEnabled(false); save(); });
+
+  function currentServicePeriod() {
+    return periodInput.value || "";
+  }
+  // Auto-reset boundaries, same principle as the checklists: storage is
+  // partitioned by real clock time so the form appears freshly reset once
+  // a service window ends, regardless of what's picked in the Service field.
+  // Before 15h: déjeuner window. 15h–20h: dîner window. After 20h: rolls
+  // back to the déjeuner bucket, ready for the next day.
+  function autoPeriod() {
+    const h = new Date().getHours();
+    if (h < 15) return "dejeuner";
+    if (h < 20) return "diner";
+    return "dejeuner";
+  }
+  periodInput.addEventListener("change", save);
+
+  function todayISO() {
+    const d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  function storageKey(dateVal) {
+    return "rosario_brief_v1_" + dateVal + "_" + autoPeriod();
+  }
+
+  // ---------- Roles ----------
+  function buildRoles() {
+    rolesList.innerHTML = "";
+    ROLES.forEach((role) => {
+      const row = document.createElement("div");
+      row.className = "role-row";
+      const lbl = document.createElement("div");
+      lbl.className = "role-label";
+      lbl.textContent = currentLang === "fr" ? role.fr : role.en;
+      lbl.dataset.fr = role.fr;
+      lbl.dataset.en = role.en;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = currentLang === "fr" ? "Prénom" : "First name";
+      input.id = "role_" + role.id;
+      input.addEventListener("input", save);
+      row.appendChild(lbl);
+      row.appendChild(input);
+      rolesList.appendChild(row);
+    });
+  }
+
+  // ---------- Groups ----------
+  function addGroup(data) {
+    groupCount += 1;
+    const card = document.createElement("div");
+    card.className = "group-card";
+    card.dataset.groupId = groupCount;
+
+    const num = document.createElement("div");
+    num.className = "group-number";
+    num.textContent = I18N[currentLang].groupN(groupCount);
+    card.appendChild(num);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = I18N[currentLang].groupRemove;
+    removeBtn.addEventListener("click", () => { card.remove(); renumberGroups(); save(); });
+    card.appendChild(removeBtn);
+
+    const row1 = document.createElement("div");
+    row1.className = "field-row";
+
+    const peopleField = document.createElement("div");
+    peopleField.className = "field";
+    const peopleLbl = document.createElement("label");
+    peopleLbl.className = "group-people-label";
+    peopleLbl.textContent = I18N[currentLang].groupPeopleLabel;
+    const peopleInput = document.createElement("input");
+    peopleInput.type = "number";
+    peopleInput.min = "0";
+    peopleInput.className = "group-people";
+    peopleInput.addEventListener("input", save);
+    peopleField.appendChild(peopleLbl);
+    peopleField.appendChild(peopleInput);
+
+    const timeField = document.createElement("div");
+    timeField.className = "field";
+    const timeLbl = document.createElement("label");
+    timeLbl.className = "group-time-label";
+    timeLbl.textContent = I18N[currentLang].groupTimeLabel;
+    const timeInput = document.createElement("input");
+    timeInput.type = "time";
+    timeInput.className = "group-time";
+    timeInput.addEventListener("input", save);
+    timeField.appendChild(timeLbl);
+    timeField.appendChild(timeInput);
+
+    row1.appendChild(peopleField);
+    row1.appendChild(timeField);
+    card.appendChild(row1);
+
+    const menuField = document.createElement("div");
+    menuField.className = "field";
+    const menuLbl = document.createElement("label");
+    menuLbl.className = "group-menu-label";
+    menuLbl.textContent = I18N[currentLang].groupMenuLabel;
+    const toggleRow = document.createElement("div");
+    toggleRow.className = "toggle-row";
+    const yesBtn = document.createElement("button");
+    yesBtn.type = "button";
+    yesBtn.className = "menu-yes-btn";
+    yesBtn.textContent = I18N[currentLang].groupMenuYes;
+    const noBtn = document.createElement("button");
+    noBtn.type = "button";
+    noBtn.className = "menu-no-btn active";
+    noBtn.textContent = I18N[currentLang].groupMenuNo;
+    toggleRow.appendChild(yesBtn);
+    toggleRow.appendChild(noBtn);
+    menuField.appendChild(menuLbl);
+    menuField.appendChild(toggleRow);
+    card.appendChild(menuField);
+
+    const detail = document.createElement("div");
+    detail.className = "menu-detail";
+    const priceField = document.createElement("div");
+    priceField.className = "field";
+    const priceLbl = document.createElement("label");
+    priceLbl.className = "group-price-label";
+    priceLbl.textContent = I18N[currentLang].groupPriceLabel;
+    const priceInput = document.createElement("input");
+    priceInput.type = "number";
+    priceInput.min = "0";
+    priceInput.className = "group-price";
+    priceInput.addEventListener("input", save);
+    priceField.appendChild(priceLbl);
+    priceField.appendChild(priceInput);
+
+    const priceTypeField = document.createElement("div");
+    priceTypeField.className = "field";
+    const priceTypeLbl = document.createElement("label");
+    priceTypeLbl.className = "group-price-type-label";
+    priceTypeLbl.textContent = I18N[currentLang].groupPriceTypeLabel;
+    const priceTypeRow = document.createElement("div");
+    priceTypeRow.className = "toggle-row";
+    const perPersonBtn = document.createElement("button");
+    perPersonBtn.type = "button";
+    perPersonBtn.className = "price-type-person-btn active";
+    perPersonBtn.textContent = I18N[currentLang].groupPricePerPerson;
+    const perGroupBtn = document.createElement("button");
+    perGroupBtn.type = "button";
+    perGroupBtn.className = "price-type-group-btn";
+    perGroupBtn.textContent = I18N[currentLang].groupPricePerGroup;
+    priceTypeRow.appendChild(perPersonBtn);
+    priceTypeRow.appendChild(perGroupBtn);
+    priceTypeField.appendChild(priceTypeLbl);
+    priceTypeField.appendChild(priceTypeRow);
+
+    function setPriceType(isGroup) {
+      perPersonBtn.classList.toggle("active", !isGroup);
+      perGroupBtn.classList.toggle("active", isGroup);
+      card.dataset.priceType = isGroup ? "groupe" : "personne";
+    }
+    perPersonBtn.addEventListener("click", () => { setPriceType(false); save(); });
+    perGroupBtn.addEventListener("click", () => { setPriceType(true); save(); });
+    setPriceType(false);
+
+    const contentField = document.createElement("div");
+    contentField.className = "field";
+    const contentLbl = document.createElement("label");
+    contentLbl.className = "group-content-label";
+    contentLbl.textContent = I18N[currentLang].groupContentLabel;
+    const contentInput = document.createElement("textarea");
+    contentInput.className = "group-content";
+    contentInput.addEventListener("input", save);
+    contentField.appendChild(contentLbl);
+    contentField.appendChild(contentInput);
+
+    detail.appendChild(priceField);
+    detail.appendChild(priceTypeField);
+    detail.appendChild(contentField);
+    card.appendChild(detail);
+
+    function setMenu(isYes) {
+      yesBtn.classList.toggle("active", isYes);
+      noBtn.classList.toggle("active", !isYes);
+      detail.classList.toggle("show", isYes);
+      card.dataset.menuImposed = isYes ? "1" : "0";
+    }
+    yesBtn.addEventListener("click", () => { setMenu(true); save(); });
+    noBtn.addEventListener("click", () => { setMenu(false); save(); });
+    setMenu(false);
+
+    groupsList.appendChild(card);
+
+    if (data) {
+      peopleInput.value = data.people || "";
+      timeInput.value = data.time || "";
+      priceInput.value = data.price || "";
+      contentInput.value = data.content || "";
+      setPriceType(data.priceType === "groupe");
+      setMenu(!!data.menuImposed);
+    }
+  }
+
+  function renumberGroups() {
+    Array.from(groupsList.children).forEach((card, idx) => {
+      card.querySelector(".group-number").textContent = I18N[currentLang].groupN(idx + 1);
+    });
+  }
+
+  function readGroups() {
+    return Array.from(groupsList.children).map((card) => ({
+      people: card.querySelector(".group-people").value,
+      time: card.querySelector(".group-time").value,
+      menuImposed: card.dataset.menuImposed === "1",
+      price: card.querySelector(".group-price").value,
+      priceType: card.dataset.priceType === "groupe" ? "groupe" : "personne",
+      content: card.querySelector(".group-content").value,
+    }));
+  }
+
+  document.getElementById("addGroupBtn").addEventListener("click", () => { addGroup(); save(); });
+
+  // ---------- VIP ----------
+  function addVip(data) {
+    vipCount += 1;
+    const card = document.createElement("div");
+    card.className = "group-card";
+    card.dataset.vipId = vipCount;
+
+    const num = document.createElement("div");
+    num.className = "group-number";
+    num.textContent = I18N[currentLang].vipN(vipCount);
+    card.appendChild(num);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = I18N[currentLang].vipRemove;
+    removeBtn.addEventListener("click", () => { card.remove(); renumberVips(); save(); });
+    card.appendChild(removeBtn);
+
+    const nameField = document.createElement("div");
+    nameField.className = "field";
+    const nameLbl = document.createElement("label");
+    nameLbl.className = "vip-name-label";
+    nameLbl.textContent = I18N[currentLang].vipNameLabel;
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.className = "vip-name";
+    nameInput.addEventListener("input", save);
+    nameField.appendChild(nameLbl);
+    nameField.appendChild(nameInput);
+    card.appendChild(nameField);
+
+    const row = document.createElement("div");
+    row.className = "field-row";
+
+    const tableField = document.createElement("div");
+    tableField.className = "field";
+    const tableLbl = document.createElement("label");
+    tableLbl.className = "vip-table-label";
+    tableLbl.textContent = I18N[currentLang].vipTableLabel;
+    const tableInput = document.createElement("input");
+    tableInput.type = "text";
+    tableInput.className = "vip-table";
+    tableInput.addEventListener("input", save);
+    tableField.appendChild(tableLbl);
+    tableField.appendChild(tableInput);
+
+    const timeField = document.createElement("div");
+    timeField.className = "field";
+    const timeLbl = document.createElement("label");
+    timeLbl.className = "vip-time-label";
+    timeLbl.textContent = I18N[currentLang].vipTimeLabel;
+    const timeInput = document.createElement("input");
+    timeInput.type = "time";
+    timeInput.className = "vip-time";
+    timeInput.addEventListener("input", save);
+    timeField.appendChild(timeLbl);
+    timeField.appendChild(timeInput);
+
+    row.appendChild(tableField);
+    row.appendChild(timeField);
+    card.appendChild(row);
+
+    const commentField = document.createElement("div");
+    commentField.className = "field";
+    const commentLbl = document.createElement("label");
+    commentLbl.className = "vip-comment-label";
+    commentLbl.textContent = I18N[currentLang].vipCommentLabel;
+    const commentTextarea = document.createElement("textarea");
+    commentTextarea.className = "vip-comment";
+    commentTextarea.placeholder = I18N[currentLang].vipCommentPlaceholder;
+    commentTextarea.addEventListener("input", save);
+    commentField.appendChild(commentLbl);
+    commentField.appendChild(commentTextarea);
+    card.appendChild(commentField);
+
+    vipList.appendChild(card);
+
+    if (data) {
+      nameInput.value = data.name || "";
+      tableInput.value = data.table || "";
+      timeInput.value = data.time || "";
+      commentTextarea.value = data.comment || "";
+    }
+  }
+
+  function renumberVips() {
+    Array.from(vipList.children).forEach((card, idx) => {
+      card.querySelector(".group-number").textContent = I18N[currentLang].vipN(idx + 1);
+    });
+  }
+
+  function readVips() {
+    return Array.from(vipList.children).map((card) => ({
+      name: card.querySelector(".vip-name").value,
+      table: card.querySelector(".vip-table").value,
+      time: card.querySelector(".vip-time").value,
+      comment: card.querySelector(".vip-comment").value,
+    }));
+  }
+
+  document.getElementById("addVipBtn").addEventListener("click", () => { addVip(); save(); });
+
+  // ---------- Dynamic lists (ruptures / push / questions) ----------
+  function makeListManager(inputId, addBtnId, listElId, arrayRef) {
+    const input = document.getElementById(inputId);
+    const addBtn = document.getElementById(addBtnId);
+    const listEl = document.getElementById(listElId);
+
+    function render() {
+      listEl.innerHTML = "";
+      arrayRef.arr.forEach((item, i) => {
+        const li = document.createElement("li");
+        const span = document.createElement("span");
+        span.textContent = item;
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.textContent = "×";
+        rm.addEventListener("click", () => { arrayRef.arr.splice(i, 1); render(); save(); });
+        li.appendChild(span);
+        li.appendChild(rm);
+        listEl.appendChild(li);
+      });
+    }
+    function addItem() {
+      const val = input.value.trim();
+      if (!val) return;
+      arrayRef.arr.push(val);
+      input.value = "";
+      render();
+      save();
+    }
+    addBtn.addEventListener("click", addItem);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addItem(); } });
+    return { render };
+  }
+
+  const rupturesCuisineRef = { arr: rupturesCuisine };
+  const rupturesBarRef = { arr: rupturesBar };
+  const pushCuisineRef = { arr: pushCuisine };
+  const pushBarRef = { arr: pushBar };
+  const questionsRef = { arr: questions };
+  const rupturesCuisineMgr = makeListManager("rupturesCuisineInput", "rupturesCuisineAddBtn", "rupturesCuisineList", rupturesCuisineRef);
+  const rupturesBarMgr = makeListManager("rupturesBarInput", "rupturesBarAddBtn", "rupturesBarList", rupturesBarRef);
+  const pushCuisineMgr = makeListManager("pushCuisineInput", "pushCuisineAddBtn", "pushCuisineList", pushCuisineRef);
+  const pushBarMgr = makeListManager("pushBarInput", "pushBarAddBtn", "pushBarList", pushBarRef);
+  const questionsMgr = makeListManager("questionsInput", "questionsAddBtn", "questionsList", questionsRef);
+
+  // ---------- Language ----------
+  function applyLang(lang) {
+    currentLang = lang;
+    localStorage.setItem("rosario_brief_lang", lang);
+    const t = I18N[lang];
+    document.getElementById("eyebrowText").textContent = t.eyebrow;
+    document.getElementById("pageTitle").textContent = t.title;
+    document.getElementById("subtitleText").textContent = t.subtitle;
+    document.getElementById("generalTitleText").textContent = t.generalTitle;
+    document.getElementById("periodLabelText").textContent = t.periodLabel;
+    document.getElementById("periodDefaultOption").textContent = t.periodDefault;
+    document.getElementById("periodLunchOption").textContent = t.periodLunch;
+    document.getElementById("periodDinnerOption").textContent = t.periodDinner;
+    document.getElementById("managerLabelText").textContent = t.managerLabel;
+    document.getElementById("managerDefaultOption").textContent = t.managerDefault;
+    document.getElementById("dateLabelText").textContent = t.dateLabel;
+    document.getElementById("meteoTitleText").textContent = t.meteoTitle;
+    document.getElementById("reservationsLabelText").textContent = t.reservationsLabel;
+    document.getElementById("groupsTitleText").textContent = t.groupsTitle;
+    document.getElementById("addGroupBtn").textContent = t.addGroupBtn;
+    document.getElementById("vipTitleText").textContent = t.vipTitle;
+    document.getElementById("vipToggleLabelText").textContent = t.vipToggleLabel;
+    document.getElementById("vipYesBtn").textContent = t.vipYes;
+    document.getElementById("vipNoBtn").textContent = t.vipNo;
+    document.getElementById("addVipBtn").textContent = t.vipAddBtn;
+    document.getElementById("teamTitleText").textContent = t.teamTitle;
+    document.getElementById("teamOptionalNoteText").textContent = t.teamOptionalNote;
+    document.getElementById("commentTitleText").textContent = t.commentTitle;
+    document.getElementById("commentInput").placeholder = t.commentPlaceholder;
+    document.getElementById("rupturesTitleText").textContent = t.rupturesTitle;
+    document.getElementById("rupturesCuisineTitleText").textContent = t.cuisineLabel;
+    document.getElementById("rupturesCuisineInput").placeholder = t.rupturesPlaceholder;
+    document.getElementById("rupturesBarTitleText").textContent = t.barLabel;
+    document.getElementById("rupturesBarInput").placeholder = t.rupturesPlaceholder;
+    document.getElementById("pushTitleText").textContent = t.pushTitle;
+    document.getElementById("pushCuisineTitleText").textContent = t.cuisineLabel;
+    document.getElementById("pushCuisineInput").placeholder = t.pushPlaceholder;
+    document.getElementById("pushBarTitleText").textContent = t.barLabel;
+    document.getElementById("pushBarInput").placeholder = t.pushPlaceholder;
+    document.getElementById("questionsTitleText").textContent = t.questionsTitle;
+    document.getElementById("questionsInput").placeholder = t.questionsPlaceholder;
+    document.getElementById("resetBtn").textContent = t.resetBtn;
+    document.getElementById("validateBtn").textContent = t.validateBtn;
+    document.getElementById("footerText").textContent = t.footer;
+    document.querySelectorAll(".lang-switch button").forEach((b) => b.classList.toggle("active", b.dataset.lang === lang));
+
+    Array.from(rolesList.children).forEach((row, i) => {
+      const lbl = row.querySelector(".role-label");
+      lbl.textContent = lang === "fr" ? lbl.dataset.fr : lbl.dataset.en;
+    });
+
+    Array.from(groupsList.children).forEach((card, idx) => {
+      card.querySelector(".group-number").textContent = t.groupN(idx + 1);
+      card.querySelector(".group-people-label").textContent = t.groupPeopleLabel;
+      card.querySelector(".group-time-label").textContent = t.groupTimeLabel;
+      card.querySelector(".group-menu-label").textContent = t.groupMenuLabel;
+      card.querySelector(".menu-yes-btn").textContent = t.groupMenuYes;
+      card.querySelector(".menu-no-btn").textContent = t.groupMenuNo;
+      card.querySelector(".group-price-label").textContent = t.groupPriceLabel;
+      card.querySelector(".group-price-type-label").textContent = t.groupPriceTypeLabel;
+      card.querySelector(".price-type-person-btn").textContent = t.groupPricePerPerson;
+      card.querySelector(".price-type-group-btn").textContent = t.groupPricePerGroup;
+      card.querySelector(".group-content-label").textContent = t.groupContentLabel;
+      card.querySelector(".remove-btn").textContent = t.groupRemove;
+    });
+
+    Array.from(vipList.children).forEach((card, idx) => {
+      card.querySelector(".group-number").textContent = t.vipN(idx + 1);
+      card.querySelector(".vip-name-label").textContent = t.vipNameLabel;
+      card.querySelector(".vip-table-label").textContent = t.vipTableLabel;
+      card.querySelector(".vip-time-label").textContent = t.vipTimeLabel;
+      card.querySelector(".vip-comment-label").textContent = t.vipCommentLabel;
+      card.querySelector(".vip-comment").placeholder = t.vipCommentPlaceholder;
+      card.querySelector(".remove-btn").textContent = t.vipRemove;
+    });
+  }
+
+  document.querySelectorAll(".lang-switch button").forEach((b) => b.addEventListener("click", () => applyLang(b.dataset.lang)));
+
+  // ---------- Save / Load ----------
+  function save() {
+    const dateVal = dateInput.value || todayISO();
+    const state = {
+      manager: managerInput.value,
+      period: periodInput.value,
+      reservations: reservationsInput.value,
+      comment: commentInput.value,
+      groups: readGroups(),
+      vipEnabled: vipEnabled,
+      vips: readVips(),
+      roles: {},
+      rupturesCuisine: rupturesCuisineRef.arr,
+      rupturesBar: rupturesBarRef.arr,
+      pushCuisine: pushCuisineRef.arr,
+      pushBar: pushBarRef.arr,
+      questions: questionsRef.arr,
+    };
+    ROLES.forEach((role) => {
+      const el = document.getElementById("role_" + role.id);
+      state.roles[role.id] = el ? el.value : "";
+    });
+    localStorage.setItem(storageKey(dateVal), JSON.stringify(state));
+    statusMsg.textContent = I18N[currentLang].statusSaved;
+    setTimeout(() => { statusMsg.textContent = ""; }, 1200);
+  }
+
+  function load() {
+    const dateVal = dateInput.value || todayISO();
+    const raw = localStorage.getItem(storageKey(dateVal));
+
+    groupsList.innerHTML = "";
+    groupCount = 0;
+    vipList.innerHTML = "";
+    vipCount = 0;
+    setVipEnabled(false);
+    managerInput.value = "";
+    periodInput.value = "";
+    reservationsInput.value = "";
+    commentInput.value = "";
+    ROLES.forEach((role) => {
+      const el = document.getElementById("role_" + role.id);
+      if (el) el.value = "";
+    });
+    rupturesCuisineRef.arr = [];
+    rupturesBarRef.arr = [];
+    pushCuisineRef.arr = [];
+    pushBarRef.arr = [];
+    questionsRef.arr = [];
+    rupturesCuisineMgr.render();
+    rupturesBarMgr.render();
+    pushCuisineMgr.render();
+    pushBarMgr.render();
+    questionsMgr.render();
+
+    if (raw) {
+      const state = JSON.parse(raw);
+      managerInput.value = state.manager || "";
+      periodInput.value = state.period || "";
+      reservationsInput.value = state.reservations || "";
+      commentInput.value = state.comment || "";
+      (state.groups || []).forEach((g) => addGroup(g));
+      setVipEnabled(!!state.vipEnabled);
+      (state.vips || []).forEach((v) => addVip(v));
+      ROLES.forEach((role) => {
+        const el = document.getElementById("role_" + role.id);
+        if (el && state.roles) el.value = state.roles[role.id] || "";
+      });
+      rupturesCuisineRef.arr = state.rupturesCuisine || [];
+      rupturesBarRef.arr = state.rupturesBar || [];
+      pushCuisineRef.arr = state.pushCuisine || [];
+      pushBarRef.arr = state.pushBar || [];
+      questionsRef.arr = state.questions || [];
+      rupturesCuisineMgr.render();
+      rupturesBarMgr.render();
+      pushCuisineMgr.render();
+      pushBarMgr.render();
+      questionsMgr.render();
+    }
+  }
+
+  // ---------- Recap ----------
+  function periodLabelFr() {
+    if (currentServicePeriod() === "diner") return "Dîner";
+    if (currentServicePeriod() === "dejeuner") return "Déjeuner";
+    return "—";
+  }
+
+  function buildReportText(managerLabel) {
+    const dateVal = dateInput.value || todayISO();
+    const t = I18N[currentLang];
+    let lines = [];
+    lines.push(I18N.fr.title + " — " + periodLabelFr() + " — " + dateVal);
+    lines.push("Manager : " + managerLabel);
+    lines.push("");
+    lines.push("MÉTÉO");
+    lines.push("Réservations : " + (reservationsInput.value || "—"));
+    lines.push("");
+    lines.push("GROUPES");
+    const groups = readGroups();
+    if (groups.length === 0) { lines.push("(aucun)"); }
+    groups.forEach((g, i) => {
+      lines.push("- Groupe " + (i + 1) + " : " + (g.people || "0") + " pers., arrivée " + (g.time || "—"));
+      lines.push("  Menu imposé : " + (g.menuImposed ? "Oui" + (g.price ? " (" + g.price + " € " + (g.priceType === "groupe" ? "pour le groupe" : "par personne") + ")" : "") : "Non"));
+      if (g.menuImposed && g.content) lines.push("  Contenu : " + g.content);
+    });
+    lines.push("");
+    lines.push("VIP");
+    if (!vipEnabled) {
+      lines.push("Non");
+    } else {
+      const vips = readVips();
+      if (vips.length === 0) { lines.push("(aucun)"); }
+      vips.forEach((v, i) => {
+        lines.push("- VIP " + (i + 1) + " : " + (v.name || "—") + " — Table " + (v.table || "—") + " — " + (v.time || "—"));
+        if (v.comment && v.comment.trim()) lines.push("  Commentaire : " + v.comment.trim());
+      });
+    }
+    lines.push("");
+    lines.push("COMMENTAIRE");
+    lines.push(commentInput.value.trim() || "(aucun)");
+    lines.push("");
+    lines.push("ORGANISATION DES ÉQUIPES");
+    ROLES.forEach((role) => {
+      const el = document.getElementById("role_" + role.id);
+      lines.push("- " + role.fr + " : " + ((el && el.value) || "—"));
+    });
+    lines.push("");
+    lines.push("RUPTURES");
+    lines.push("Cuisine :");
+    lines.push(rupturesCuisineRef.arr.length ? rupturesCuisineRef.arr.map((r) => "- " + r).join("\n") : "(aucune)");
+    lines.push("Bar :");
+    lines.push(rupturesBarRef.arr.length ? rupturesBarRef.arr.map((r) => "- " + r).join("\n") : "(aucune)");
+    lines.push("");
+    lines.push("À POUSSER");
+    lines.push("Cuisine :");
+    lines.push(pushCuisineRef.arr.length ? pushCuisineRef.arr.map((r) => "- " + r).join("\n") : "(aucun)");
+    lines.push("Bar :");
+    lines.push(pushBarRef.arr.length ? pushBarRef.arr.map((r) => "- " + r).join("\n") : "(aucun)");
+    lines.push("");
+    lines.push("QUESTIONS POUR TESTER LES ÉQUIPES");
+    lines.push(questionsRef.arr.length ? questionsRef.arr.map((r) => "- " + r).join("\n") : "(aucune)");
+    return lines.join("\n");
+  }
+
+  function buildReportHtml(managerLabel) {
+    const dateVal = dateInput.value || todayISO();
+    let html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c1a17;">';
+    html += '<h2 style="margin:0 0 8px;">' + I18N.fr.title + ' — ' + periodLabelFr() + ' — ' + dateVal + '</h2>';
+    html += '<p style="margin:0 0 16px;"><strong>Manager :</strong> ' + managerLabel + '</p>';
+
+    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Météo</h3>';
+    html += '<p style="margin:0 0 8px;"><strong>Réservations :</strong> ' + (reservationsInput.value || '—') + '</p>';
+
+    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Groupes</h3>';
+    const groups = readGroups();
+    if (groups.length === 0) {
+      html += '<div style="color:#8a8378;font-style:italic;">(aucun)</div>';
+    } else {
+      groups.forEach((g, i) => {
+        html += '<div style="border:1px solid #e4ddd1;border-radius:8px;padding:10px 12px;margin-bottom:8px;">';
+        html += '<div style="font-weight:700;">Groupe ' + (i + 1) + ' — ' + (g.people || '0') + ' pers., arrivée ' + (g.time || '—') + '</div>';
+        html += '<div style="color:#8a8378;font-size:13px;">Menu imposé : ' + (g.menuImposed ? 'Oui' + (g.price ? ' (' + g.price + ' € ' + (g.priceType === 'groupe' ? 'pour le groupe' : 'par personne') + ')' : '') : 'Non') + '</div>';
+        if (g.menuImposed && g.content) html += '<div style="font-size:13px;margin-top:4px;">' + g.content.replace(/</g,'&lt;') + '</div>';
+        html += '</div>';
+      });
+    }
+
+    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">VIP</h3>';
+    if (!vipEnabled) {
+      html += '<div style="color:#8a8378;font-style:italic;">Non</div>';
+    } else {
+      const vips = readVips();
+      if (vips.length === 0) {
+        html += '<div style="color:#8a8378;font-style:italic;">(aucun)</div>';
+      } else {
+        vips.forEach((v, i) => {
+          html += '<div style="border:1px solid #e4ddd1;border-radius:8px;padding:10px 12px;margin-bottom:8px;">';
+          html += '<div style="font-weight:700;">VIP ' + (i + 1) + ' — ' + (v.name ? v.name.replace(/</g,'&lt;') : '—') + '</div>';
+          html += '<div style="color:#8a8378;font-size:13px;">Table ' + (v.table || '—') + ' — ' + (v.time || '—') + '</div>';
+          if (v.comment && v.comment.trim()) html += '<div style="font-size:13px;margin-top:4px;">' + v.comment.trim().replace(/</g,'&lt;') + '</div>';
+          html += '</div>';
+        });
+      }
+    }
+
+    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Commentaire</h3>';
+    html += '<p style="margin:0 0 8px;">' + (commentInput.value.trim() ? commentInput.value.trim().replace(/</g,'&lt;').replace(/\n/g,'<br>') : '(aucun)') + '</p>';
+
+    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Organisation des équipes</h3>';
+    ROLES.forEach((role) => {
+      const el = document.getElementById("role_" + role.id);
+      html += '<div style="margin:2px 0;"><strong>' + role.fr + ' :</strong> ' + ((el && el.value) || '—') + '</div>';
+    });
+
+    function listBlock(title, arr) {
+      html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">' + title + '</h3>';
+      if (arr.length === 0) { html += '<div style="color:#8a8378;font-style:italic;">(aucun)</div>'; return; }
+      arr.forEach((item) => { html += '<div style="margin:2px 0;">• ' + item.replace(/</g,'&lt;') + '</div>'; });
+    }
+    listBlock('Ruptures — Cuisine', rupturesCuisineRef.arr);
+    listBlock('Ruptures — Bar', rupturesBarRef.arr);
+    listBlock('À pousser — Cuisine', pushCuisineRef.arr);
+    listBlock('À pousser — Bar', pushBarRef.arr);
+    listBlock('Questions pour tester les équipes', questionsRef.arr);
+
+    html += '</div>';
+    return html;
+  }
+
+  function showRecap(managerId, managerLabel) {
+    const t = I18N[currentLang];
+    const dateVal = dateInput.value || todayISO();
+    recapScreen.dataset.managerId = managerId;
+    recapScreen.dataset.managerLabel = managerLabel;
+    document.getElementById("recapSendBtn").textContent = t.recapSendBtn;
+    document.getElementById("recapStatusMsg").textContent = "";
+    document.getElementById("recapBadgeText").textContent = t.recapBadge;
+    document.getElementById("recapTitleText").textContent = t.title;
+    document.getElementById("recapSubText").textContent = t.recapSub(managerLabel, dateVal);
+    document.getElementById("recapIdentityTitle").textContent = t.recapIdentityTitle;
+    document.getElementById("recapPeriodLabel").textContent = t.recapPeriodLabel;
+    document.getElementById("recapPeriodValue").textContent = currentServicePeriod() === "diner" ? t.periodDinner : (currentServicePeriod() === "dejeuner" ? t.periodLunch : t.notFilled);
+    document.getElementById("recapManagerLabel").textContent = t.recapManagerLabel;
+    document.getElementById("recapManagerValue").textContent = managerLabel;
+    document.getElementById("recapDateLabel").textContent = t.recapDateLabel;
+    document.getElementById("recapDateValue").textContent = dateVal;
+    document.getElementById("recapMeteoTitle").textContent = t.recapMeteoTitle;
+    document.getElementById("recapReservationsLabel").textContent = t.recapReservationsLabel;
+    document.getElementById("recapReservationsValue").textContent = reservationsInput.value || t.notFilled;
+    document.getElementById("recapGroupsTitle").textContent = t.recapGroupsTitle;
+    document.getElementById("recapVipTitle").textContent = t.recapVipTitle;
+    document.getElementById("recapTeamTitle").textContent = t.recapTeamTitle;
+    document.getElementById("recapCommentTitle").textContent = t.recapCommentTitle;
+    const commentVal = commentInput.value.trim();
+    const commentEl = document.getElementById("recapCommentValue");
+    commentEl.textContent = commentVal || t.emptyComment;
+    commentEl.className = commentVal ? "" : "recap-empty";
+    document.getElementById("recapRupturesTitle").textContent = t.recapRupturesTitle;
+    document.getElementById("recapRupturesCuisineTitle").textContent = t.cuisineLabel;
+    document.getElementById("recapRupturesBarTitle").textContent = t.barLabel;
+    document.getElementById("recapPushTitle").textContent = t.recapPushTitle;
+    document.getElementById("recapPushCuisineTitle").textContent = t.cuisineLabel;
+    document.getElementById("recapPushBarTitle").textContent = t.barLabel;
+    document.getElementById("recapQuestionsTitle").textContent = t.recapQuestionsTitle;
+    document.getElementById("recapCloseBtn").textContent = t.recapClose;
+
+    const groupsEl = document.getElementById("recapGroups");
+    groupsEl.innerHTML = "";
+    const groups = readGroups();
+    if (groups.length === 0) {
+      const p = document.createElement("p");
+      p.className = "recap-empty";
+      p.textContent = t.emptyGroups;
+      groupsEl.appendChild(p);
+    } else {
+      groups.forEach((g, i) => {
+        const div = document.createElement("div");
+        div.className = "recap-group";
+        const title = document.createElement("div");
+        title.className = "g-title";
+        title.textContent = t.groupN(i + 1) + " — " + t.groupSummary(g.people || "0", g.time);
+        div.appendChild(title);
+        const menuLine = document.createElement("div");
+        menuLine.className = "g-line";
+        menuLine.textContent = g.menuImposed ? t.groupMenuSummaryYes(g.price, g.priceType) : t.groupMenuSummaryNo;
+        div.appendChild(menuLine);
+        if (g.menuImposed && g.content) {
+          const contentLine = document.createElement("div");
+          contentLine.className = "g-line";
+          contentLine.style.marginTop = "4px";
+          contentLine.textContent = g.content;
+          div.appendChild(contentLine);
+        }
+        groupsEl.appendChild(div);
+      });
+    }
+
+    const vipsEl = document.getElementById("recapVips");
+    vipsEl.innerHTML = "";
+    if (!vipEnabled) {
+      const p = document.createElement("p");
+      p.className = "recap-empty";
+      p.textContent = t.vipNo;
+      vipsEl.appendChild(p);
+    } else {
+      const vips = readVips();
+      if (vips.length === 0) {
+        const p = document.createElement("p");
+        p.className = "recap-empty";
+        p.textContent = t.emptyVips;
+        vipsEl.appendChild(p);
+      } else {
+        vips.forEach((v, i) => {
+          const div = document.createElement("div");
+          div.className = "recap-group";
+          const title = document.createElement("div");
+          title.className = "g-title";
+          title.textContent = t.vipN(i + 1) + " — " + (v.name || t.notFilled);
+          div.appendChild(title);
+          const line = document.createElement("div");
+          line.className = "g-line";
+          line.textContent = t.vipSummaryLine(v.table, v.time);
+          div.appendChild(line);
+          if (v.comment && v.comment.trim()) {
+            const commentLine = document.createElement("div");
+            commentLine.className = "g-line";
+            commentLine.style.marginTop = "4px";
+            commentLine.textContent = v.comment.trim();
+            div.appendChild(commentLine);
+          }
+          vipsEl.appendChild(div);
+        });
+      }
+    }
+
+    const rolesEl = document.getElementById("recapRoles");
+    rolesEl.innerHTML = "";
+    ROLES.forEach((role) => {
+      const el = document.getElementById("role_" + role.id);
+      const row = document.createElement("div");
+      row.className = "recap-row";
+      const k = document.createElement("span");
+      k.className = "k";
+      k.textContent = currentLang === "fr" ? role.fr : role.en;
+      const v = document.createElement("span");
+      v.className = "v";
+      v.textContent = (el && el.value) || t.notFilled;
+      row.appendChild(k);
+      row.appendChild(v);
+      rolesEl.appendChild(row);
+    });
+
+    function fillRecapList(elId, arr) {
+      const el = document.getElementById(elId);
+      el.innerHTML = "";
+      if (arr.length === 0) {
+        const li = document.createElement("li");
+        li.className = "recap-empty";
+        li.textContent = t.emptyList;
+        el.appendChild(li);
+        return;
+      }
+      arr.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        el.appendChild(li);
+      });
+    }
+    fillRecapList("recapRupturesCuisine", rupturesCuisineRef.arr);
+    fillRecapList("recapRupturesBar", rupturesBarRef.arr);
+    fillRecapList("recapPushCuisine", pushCuisineRef.arr);
+    fillRecapList("recapPushBar", pushBarRef.arr);
+    fillRecapList("recapQuestions", questionsRef.arr);
+
+    recapScreen.classList.add("visible");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("recapCloseBtn").addEventListener("click", () => { recapScreen.classList.remove("visible"); });
+
+  // ---------- Reset / Validate ----------
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    if (!confirm(I18N[currentLang].resetConfirm)) return;
+    managerInput.value = "";
+    periodInput.value = "";
+    reservationsInput.value = "";
+    commentInput.value = "";
+    groupsList.innerHTML = "";
+    groupCount = 0;
+    vipList.innerHTML = "";
+    vipCount = 0;
+    setVipEnabled(false);
+    ROLES.forEach((role) => {
+      const el = document.getElementById("role_" + role.id);
+      if (el) el.value = "";
+    });
+    rupturesCuisineRef.arr = [];
+    rupturesBarRef.arr = [];
+    pushCuisineRef.arr = [];
+    pushBarRef.arr = [];
+    questionsRef.arr = [];
+    rupturesCuisineMgr.render();
+    rupturesBarMgr.render();
+    pushCuisineMgr.render();
+    pushBarMgr.render();
+    questionsMgr.render();
+    save();
+  });
+
+  document.getElementById("validateBtn").addEventListener("click", () => {
+    const managerId = managerInput.value;
+    if (!managerId) {
+      statusMsg.style.color = "var(--accent)";
+      statusMsg.textContent = I18N[currentLang].statusMissingManager;
+      return;
+    }
+    save();
+    const managerLabel = MANAGER_LABELS[managerId];
+    showRecap(managerId, managerLabel);
+  });
+
+  function sendBriefEmail(managerId, managerLabel) {
+    const recapStatusMsg = document.getElementById("recapStatusMsg");
+    const dateVal = dateInput.value || todayISO();
+    const subjectPlain = I18N.fr.title + " — " + periodLabelFr() + " — " + dateVal + " — " + managerLabel;
+    const bodyPlain = buildReportText(managerLabel);
+    const bodyHtml = buildReportHtml(managerLabel);
+
+    recapStatusMsg.style.color = "var(--ok)";
+    recapStatusMsg.textContent = I18N[currentLang].statusSending;
+    fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "brief", managerId: managerId, subject: subjectPlain, body: bodyPlain, htmlBody: bodyHtml }),
+    }).then(() => {
+      recapStatusMsg.textContent = I18N[currentLang].statusSent;
+    }).catch(() => {
+      const subject = encodeURIComponent(subjectPlain);
+      const body = encodeURIComponent(bodyPlain);
+      window.location.href = "mailto:" + MANAGER_EMAILS[managerId] + "?subject=" + subject + "&body=" + body;
+      recapStatusMsg.textContent = I18N[currentLang].statusFallback;
+    });
+  }
+
+  document.getElementById("recapSendBtn").addEventListener("click", () => {
+    const managerId = recapScreen.dataset.managerId;
+    const managerLabel = recapScreen.dataset.managerLabel;
+    if (!managerId) return;
+    sendBriefEmail(managerId, managerLabel);
+  });
+
+  managerInput.addEventListener("change", save);
+  reservationsInput.addEventListener("input", save);
+  commentInput.addEventListener("input", save);
+  dateInput.addEventListener("change", load);
+
+  // ---------- Init ----------
+  dateInput.value = todayISO();
+  buildRoles();
+  load();
+  applyLang(currentLang);
+</script>
+</body>
+</html>
