@@ -1391,66 +1391,128 @@
 
   function buildReportHtml(managerLabel) {
     const dateVal = dateInput.value || todayISO();
-    let html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1c1a17;">';
-    html += '<h2 style="margin:0 0 8px;">' + I18N.fr.title + ' — ' + periodLabelFr() + ' — ' + dateVal + '</h2>';
-    html += '<p style="margin:0 0 16px;"><strong>Manager :</strong> ' + managerLabel + '</p>';
+    const INK = '#1c1a17', PAPER = '#faf7f2', CARD = '#ffffff', LINE = '#e4ddd1', ACCENT = '#b3401f', MUTED = '#8a8378';
+    const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
+    const logoImg = document.querySelector('.brand-mark');
+    const logoSrc = logoImg ? logoImg.getAttribute('src') : '';
 
-    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Météo</h3>';
-    html += '<p style="margin:0 0 8px;"><strong>Réservations :</strong> ' + (reservationsInput.value || '—') + '</p>';
+    function esc(s) { return (s || '').replace(/</g, '&lt;'); }
 
-    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Groupes</h3>';
+    function cardOpen(title) {
+      return '<div style="background:' + CARD + ';border:1px solid ' + LINE + ';border-radius:14px;padding:20px;margin-bottom:14px;">'
+        + '<div style="text-transform:uppercase;letter-spacing:0.06em;font-size:13px;font-weight:700;color:' + ACCENT + ';margin:0 0 14px;">' + title + '</div>';
+    }
+    const cardClose = '</div>';
+    function subtitle(title, first) {
+      return '<div style="text-transform:uppercase;letter-spacing:0.06em;font-size:12px;font-weight:700;color:' + MUTED + ';margin:' + (first ? '0' : '18px') + ' 0 10px;' + (first ? '' : 'padding-top:12px;border-top:1px solid ' + LINE + ';') + '">' + title + '</div>';
+    }
+    function row(label, value) {
+      return '<div style="display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:14.5px;"><span style="color:' + MUTED + ';">' + label + '</span><span style="font-weight:600;text-align:right;">' + value + '</span></div>';
+    }
+    function emptyLine(text) {
+      return '<div style="color:' + MUTED + ';font-style:italic;font-size:13.5px;">' + text + '</div>';
+    }
+    function entryCard(titleLine, subLine, extraLine) {
+      let out = '<div style="border:1px solid ' + LINE + ';border-radius:10px;padding:12px 14px;margin-bottom:8px;">';
+      out += '<div style="font-weight:700;font-size:14px;">' + titleLine + '</div>';
+      out += '<div style="color:' + MUTED + ';font-size:13px;margin-top:2px;">' + subLine + '</div>';
+      if (extraLine) out += '<div style="font-size:13px;margin-top:4px;">' + extraLine + '</div>';
+      out += '</div>';
+      return out;
+    }
+    function listBlock(title, arr, first) {
+      let out = subtitle(title, first);
+      if (arr.length === 0) { out += emptyLine('(aucun)'); return out; }
+      arr.forEach((item) => { out += '<div style="padding:6px 0;border-bottom:1px solid ' + LINE + ';font-size:14px;">' + esc(item) + '</div>'; });
+      return out;
+    }
+
+    let html = '<div style="background:' + PAPER + ';padding:28px 16px;font-family:' + FONT + ';color:' + INK + ';">';
+    html += '<div style="max-width:600px;margin:0 auto;">';
+
+    // Header
+    html += '<div style="margin-bottom:20px;">';
+    html += '<div style="text-transform:uppercase;letter-spacing:0.12em;font-size:11px;color:' + ACCENT + ';font-weight:700;margin:0 0 8px;">' + esc(I18N.fr.eyebrow) + '</div>';
+    html += '<div style="font-size:24px;font-weight:700;margin:0 0 4px;">' + esc(I18N.fr.title) + '</div>';
+    html += '<div style="color:' + MUTED + ';font-size:14px;">' + periodLabelFr() + ' — ' + dateVal + ' — ' + esc(managerLabel) + '</div>';
+    html += '</div>';
+
+    // Général
+    html += cardOpen('Général');
+    html += row('Manager', esc(managerLabel));
+    html += row('Service', periodLabelFr());
+    html += row('Date', dateVal);
+    html += cardClose;
+
+    // Météo
+    html += cardOpen('Météo');
+    html += row('Réservations', esc(reservationsInput.value || '—'));
+
+    html += subtitle('Groupes', false);
     const groups = readGroups();
     if (groups.length === 0) {
-      html += '<div style="color:#8a8378;font-style:italic;">(aucun)</div>';
+      html += emptyLine('(aucun groupe)');
     } else {
       groups.forEach((g, i) => {
-        html += '<div style="border:1px solid #e4ddd1;border-radius:8px;padding:10px 12px;margin-bottom:8px;">';
-        html += '<div style="font-weight:700;">Groupe ' + (i + 1) + ' — ' + (g.people || '0') + ' pers., arrivée ' + (g.time || '—') + '</div>';
-        html += '<div style="color:#8a8378;font-size:13px;">Menu imposé : ' + (g.menuImposed ? 'Oui' + (g.price ? ' (' + g.price + ' € ' + (g.priceType === 'groupe' ? 'pour le groupe' : 'par personne') + ')' : '') : 'Non') + '</div>';
-        if (g.menuImposed && g.content) html += '<div style="font-size:13px;margin-top:4px;">' + g.content.replace(/</g,'&lt;') + '</div>';
-        html += '</div>';
+        const menuLine = g.menuImposed ? 'Menu imposé — ' + (g.price ? g.price + ' € ' + (g.priceType === 'groupe' ? '(pour le groupe)' : '(par personne)') : 'prix non précisé') : 'Pas de menu imposé';
+        html += entryCard('Groupe ' + (i + 1) + ' — ' + (g.people || '0') + ' pers. — arrivée ' + (g.time || '—'), menuLine, g.menuImposed && g.content ? esc(g.content) : '');
       });
     }
 
-    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">VIP</h3>';
+    html += subtitle('VIP', false);
     if (!vipEnabled) {
-      html += '<div style="color:#8a8378;font-style:italic;">Non</div>';
+      html += emptyLine('Non');
     } else {
       const vips = readVips();
       if (vips.length === 0) {
-        html += '<div style="color:#8a8378;font-style:italic;">(aucun)</div>';
+        html += emptyLine('(aucun VIP)');
       } else {
         vips.forEach((v, i) => {
-          html += '<div style="border:1px solid #e4ddd1;border-radius:8px;padding:10px 12px;margin-bottom:8px;">';
-          html += '<div style="font-weight:700;">VIP ' + (i + 1) + ' — ' + (v.name ? v.name.replace(/</g,'&lt;') : '—') + '</div>';
-          html += '<div style="color:#8a8378;font-size:13px;">Table ' + (v.table || '—') + ' — ' + (v.time || '—') + '</div>';
-          if (v.comment && v.comment.trim()) html += '<div style="font-size:13px;margin-top:4px;">' + v.comment.trim().replace(/</g,'&lt;') + '</div>';
-          html += '</div>';
+          html += entryCard('VIP ' + (i + 1) + ' — ' + (v.name ? esc(v.name) : '—'), 'Table ' + (v.table || '—') + ' — ' + (v.time || '—'), v.comment && v.comment.trim() ? esc(v.comment.trim()) : '');
         });
       }
     }
 
-    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Commentaire</h3>';
-    html += '<p style="margin:0 0 8px;">' + (commentInput.value.trim() ? commentInput.value.trim().replace(/</g,'&lt;').replace(/\n/g,'<br>') : '(aucun)') + '</p>';
+    html += subtitle('Commentaire', false);
+    html += '<div style="font-size:14.5px;">' + (commentInput.value.trim() ? esc(commentInput.value.trim()).replace(/\n/g, '<br>') : '<span style="color:' + MUTED + ';font-style:italic;">(aucun)</span>') + '</div>';
+    html += cardClose;
 
-    html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">Organisation des équipes</h3>';
+    // Organisation des équipes
+    html += cardOpen('Organisation des équipes');
     ROLES.forEach((role) => {
-      const el = document.getElementById("role_" + role.id);
-      html += '<div style="margin:2px 0;"><strong>' + role.fr + ' :</strong> ' + ((el && el.value) || '—') + '</div>';
+      const el = document.getElementById('role_' + role.id);
+      html += row(role.fr, esc((el && el.value) || '—'));
     });
+    html += cardClose;
 
-    function listBlock(title, arr) {
-      html += '<h3 style="margin:16px 0 6px;text-transform:uppercase;font-size:12px;letter-spacing:0.06em;color:#b3401f;">' + title + '</h3>';
-      if (arr.length === 0) { html += '<div style="color:#8a8378;font-style:italic;">(aucun)</div>'; return; }
-      arr.forEach((item) => { html += '<div style="margin:2px 0;">• ' + item.replace(/</g,'&lt;') + '</div>'; });
+    // Ruptures
+    html += cardOpen('Ruptures');
+    html += listBlock('Cuisine', rupturesCuisineRef.arr, true);
+    html += listBlock('Bar', rupturesBarRef.arr, false);
+    html += cardClose;
+
+    // À pousser
+    html += cardOpen('À pousser');
+    html += listBlock('Cuisine', pushCuisineRef.arr, true);
+    html += listBlock('Bar', pushBarRef.arr, false);
+    html += cardClose;
+
+    // Questions
+    html += cardOpen('Questions pour tester les équipes');
+    if (questionsRef.arr.length === 0) {
+      html += emptyLine('(aucune)');
+    } else {
+      questionsRef.arr.forEach((item) => { html += '<div style="padding:6px 0;border-bottom:1px solid ' + LINE + ';font-size:14px;">' + esc(item) + '</div>'; });
     }
-    listBlock('Ruptures — Cuisine', rupturesCuisineRef.arr);
-    listBlock('Ruptures — Bar', rupturesBarRef.arr);
-    listBlock('À pousser — Cuisine', pushCuisineRef.arr);
-    listBlock('À pousser — Bar', pushBarRef.arr);
-    listBlock('Questions pour tester les équipes', questionsRef.arr);
+    html += cardClose;
 
+    // Footer
+    html += '<div style="text-align:center;margin-top:24px;">';
+    if (logoSrc) html += '<img src="' + logoSrc + '" alt="Rosario" style="height:26px;width:auto;margin:0 auto 8px;display:inline-block;">';
+    html += '<div style="font-size:11px;color:' + MUTED + ';">Domingo — Rosario</div>';
     html += '</div>';
+
+    html += '</div></div>';
     return html;
   }
 
