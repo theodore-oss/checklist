@@ -1391,64 +1391,70 @@
 
   function buildReportHtml(managerLabel) {
     const dateVal = dateInput.value || todayISO();
-    const INK = '#1c1a17', PAPER = '#faf7f2', CARD = '#ffffff', LINE = '#e4ddd1', ACCENT = '#b3401f', MUTED = '#8a8378';
+    const INK = '#1c1a17', PAPER = '#faf7f2', CARD = '#ffffff', LINE = '#e4ddd1', ACCENT = '#b3401f', MUTED = '#8a8378', SUCCESS = '#2f6d46';
     const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif";
-    const logoImg = document.querySelector('.brand-mark');
-    const logoSrc = logoImg ? logoImg.getAttribute('src') : '';
 
     function esc(s) { return (s || '').replace(/</g, '&lt;'); }
 
-    function cardOpen(title) {
-      return '<div style="background:' + CARD + ';border:1px solid ' + LINE + ';border-radius:14px;padding:20px;margin-bottom:14px;">'
-        + '<div style="text-transform:uppercase;letter-spacing:0.06em;font-size:13px;font-weight:700;color:' + ACCENT + ';margin:0 0 14px;">' + title + '</div>';
+    // Mirrors .recap-section h3
+    function sectionTitle(title) {
+      return '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:' + ACCENT + ';margin:0 0 10px;border-bottom:1px solid ' + LINE + ';padding-bottom:6px;">' + title + '</div>';
     }
-    const cardClose = '</div>';
+    const sectionOpen = '<div style="margin-bottom:20px;">';
+    const sectionClose = '</div>';
+    // Mirrors the inline subtitle style used for Groupes / VIP / Commentaire / Cuisine / Bar inside recap sections
     function subtitle(title, first) {
-      return '<div style="text-transform:uppercase;letter-spacing:0.06em;font-size:12px;font-weight:700;color:' + MUTED + ';margin:' + (first ? '0' : '18px') + ' 0 10px;' + (first ? '' : 'padding-top:12px;border-top:1px solid ' + LINE + ';') + '">' + title + '</div>';
+      return '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:' + MUTED + ';margin:' + (first ? '0 0 8px' : '14px 0 8px') + ';">' + title + '</div>';
     }
+    // Mirrors .recap-row
     function row(label, value) {
       return '<div style="display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:14.5px;"><span style="color:' + MUTED + ';">' + label + '</span><span style="font-weight:600;text-align:right;">' + value + '</span></div>';
     }
+    // Mirrors .recap-empty
     function emptyLine(text) {
-      return '<div style="color:' + MUTED + ';font-style:italic;font-size:13.5px;">' + text + '</div>';
+      return '<p style="color:' + MUTED + ';font-size:13.5px;font-style:italic;margin:0;">' + text + '</p>';
     }
+    // Mirrors .recap-group / .g-title / .g-line
     function entryCard(titleLine, subLine, extraLine) {
-      let out = '<div style="border:1px solid ' + LINE + ';border-radius:10px;padding:12px 14px;margin-bottom:8px;">';
-      out += '<div style="font-weight:700;font-size:14px;">' + titleLine + '</div>';
-      out += '<div style="color:' + MUTED + ';font-size:13px;margin-top:2px;">' + subLine + '</div>';
+      let out = '<div style="background:' + CARD + ';border:1px solid ' + LINE + ';border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:14px;">';
+      out += '<div style="font-weight:700;margin-bottom:4px;">' + titleLine + '</div>';
+      out += '<div style="color:' + MUTED + ';font-size:13px;">' + subLine + '</div>';
       if (extraLine) out += '<div style="font-size:13px;margin-top:4px;">' + extraLine + '</div>';
       out += '</div>';
       return out;
     }
-    function listBlock(title, arr, first) {
-      let out = subtitle(title, first);
-      if (arr.length === 0) { out += emptyLine('(aucun)'); return out; }
-      arr.forEach((item) => { out += '<div style="padding:6px 0;border-bottom:1px solid ' + LINE + ';font-size:14px;">' + esc(item) + '</div>'; });
+    // Mirrors .recap-list
+    function recapList(arr, emptyText) {
+      if (arr.length === 0) { return emptyLine(emptyText); }
+      let out = '';
+      arr.forEach((item, i) => {
+        out += '<div style="padding:7px 0;font-size:14.5px;' + (i < arr.length - 1 ? 'border-bottom:1px solid ' + LINE + ';' : '') + '">' + esc(item) + '</div>';
+      });
       return out;
     }
 
-    let html = '<div style="background:' + PAPER + ';padding:28px 16px;font-family:' + FONT + ';color:' + INK + ';">';
+    const periodValue = currentServicePeriod() === 'diner' ? 'Dîner' : (currentServicePeriod() === 'dejeuner' ? 'Déjeuner' : '—');
+
+    let html = '<div style="background:' + PAPER + ';padding:24px 16px 40px;font-family:' + FONT + ';color:' + INK + ';">';
     html += '<div style="max-width:600px;margin:0 auto;">';
 
-    // Header
-    html += '<div style="margin-bottom:20px;">';
-    html += '<div style="text-transform:uppercase;letter-spacing:0.12em;font-size:11px;color:' + ACCENT + ';font-weight:700;margin:0 0 8px;">' + esc(I18N.fr.eyebrow) + '</div>';
-    html += '<div style="font-size:24px;font-weight:700;margin:0 0 4px;">' + esc(I18N.fr.title) + '</div>';
-    html += '<div style="color:' + MUTED + ';font-size:14px;">' + periodLabelFr() + ' — ' + dateVal + ' — ' + esc(managerLabel) + '</div>';
-    html += '</div>';
+    // Badge / title / sub — mirrors .recap-badge / .recap-title / .recap-sub
+    html += '<span style="display:inline-block;background:' + SUCCESS + ';color:#ffffff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:999px;margin-bottom:14px;">Brief validé</span>';
+    html += '<div style="font-size:26px;font-weight:700;margin:0 0 4px;">Brief de service</div>';
+    html += '<div style="color:' + MUTED + ';font-size:14px;margin:0 0 24px;">Rempli par ' + esc(managerLabel) + ' — ' + dateVal + '</div>';
 
-    // Général
-    html += cardOpen('Général');
+    // Service
+    html += sectionOpen + sectionTitle('Service');
+    html += row('Service', periodValue);
     html += row('Manager', esc(managerLabel));
-    html += row('Service', periodLabelFr());
     html += row('Date', dateVal);
-    html += cardClose;
+    html += sectionClose;
 
     // Météo
-    html += cardOpen('Météo');
+    html += sectionOpen + sectionTitle('Météo');
     html += row('Réservations', esc(reservationsInput.value || '—'));
 
-    html += subtitle('Groupes', false);
+    html += subtitle('Groupes', true);
     const groups = readGroups();
     if (groups.length === 0) {
       html += emptyLine('(aucun groupe)');
@@ -1474,43 +1480,33 @@
     }
 
     html += subtitle('Commentaire', false);
-    html += '<div style="font-size:14.5px;">' + (commentInput.value.trim() ? esc(commentInput.value.trim()).replace(/\n/g, '<br>') : '<span style="color:' + MUTED + ';font-style:italic;">(aucun)</span>') + '</div>';
-    html += cardClose;
+    html += commentInput.value.trim() ? '<p style="font-size:14.5px;margin:0;">' + esc(commentInput.value.trim()).replace(/\n/g, '<br>') + '</p>' : emptyLine('(aucun commentaire)');
+    html += sectionClose;
 
     // Organisation des équipes
-    html += cardOpen('Organisation des équipes');
+    html += sectionOpen + sectionTitle('Organisation des équipes');
     ROLES.forEach((role) => {
       const el = document.getElementById('role_' + role.id);
       html += row(role.fr, esc((el && el.value) || '—'));
     });
-    html += cardClose;
+    html += sectionClose;
 
     // Ruptures
-    html += cardOpen('Ruptures');
-    html += listBlock('Cuisine', rupturesCuisineRef.arr, true);
-    html += listBlock('Bar', rupturesBarRef.arr, false);
-    html += cardClose;
+    html += sectionOpen + sectionTitle('Ruptures');
+    html += subtitle('Cuisine', true) + recapList(rupturesCuisineRef.arr, '(aucun)');
+    html += subtitle('Bar', false) + recapList(rupturesBarRef.arr, '(aucun)');
+    html += sectionClose;
 
     // À pousser
-    html += cardOpen('À pousser');
-    html += listBlock('Cuisine', pushCuisineRef.arr, true);
-    html += listBlock('Bar', pushBarRef.arr, false);
-    html += cardClose;
+    html += sectionOpen + sectionTitle('À pousser');
+    html += subtitle('Cuisine', true) + recapList(pushCuisineRef.arr, '(aucun)');
+    html += subtitle('Bar', false) + recapList(pushBarRef.arr, '(aucun)');
+    html += sectionClose;
 
     // Questions
-    html += cardOpen('Questions pour tester les équipes');
-    if (questionsRef.arr.length === 0) {
-      html += emptyLine('(aucune)');
-    } else {
-      questionsRef.arr.forEach((item) => { html += '<div style="padding:6px 0;border-bottom:1px solid ' + LINE + ';font-size:14px;">' + esc(item) + '</div>'; });
-    }
-    html += cardClose;
-
-    // Footer
-    html += '<div style="text-align:center;margin-top:24px;">';
-    if (logoSrc) html += '<img src="' + logoSrc + '" alt="Rosario" style="height:26px;width:auto;margin:0 auto 8px;display:inline-block;">';
-    html += '<div style="font-size:11px;color:' + MUTED + ';">Domingo — Rosario</div>';
-    html += '</div>';
+    html += sectionOpen + sectionTitle('Questions pour tester les équipes');
+    html += recapList(questionsRef.arr, '(aucun)');
+    html += sectionClose;
 
     html += '</div></div>';
     return html;
