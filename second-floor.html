@@ -385,8 +385,14 @@
   }
 
   // Some tasks only need to appear on specific days of the week (0=Sunday … 6=Saturday).
+  // Based on the DATE field the person filling the checklist selected, not the device's clock —
+  // that way a checklist done late, in advance, or on another device still shows the right tasks.
+  function selectedDayOfWeek() {
+    const v = (dateInput.value || todayISO()).split("-").map(Number);
+    return new Date(v[0], v[1] - 1, v[2]).getDay();
+  }
   function isTaskVisibleToday(task) {
-    return !task.days || task.days.includes(new Date().getDay());
+    return !task.days || task.days.includes(selectedDayOfWeek());
   }
 
   const SECTION_NAME_FR = {
@@ -669,7 +675,7 @@
     });
   });
 
-  dateInput.addEventListener("change", load);
+  dateInput.addEventListener("change", () => { buildSections(); load(); });
   employeeInput.addEventListener("input", save);
   serviceInput.addEventListener("change", save);
   commentsInput.addEventListener("input", save);
