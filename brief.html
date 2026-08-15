@@ -642,6 +642,7 @@
       statusMissingManager: "Choisis le manager avant de valider.",
       statusSending: "Envoi en cours…",
       statusSent: "Brief envoyé par email.",
+      statusDraftOpened: "Brouillon d'email ouvert — il ne reste qu'à l'envoyer.",
       statusFallback: "Connexion impossible — un brouillon d'email a été ouvert à la place.",
       recapBadge: "Brief validé",
       recapSub: (mgr, date) => "Rempli par " + mgr + " — " + date,
@@ -736,6 +737,7 @@
       statusMissingManager: "Pick the manager before validating.",
       statusSending: "Sending…",
       statusSent: "Brief sent by email.",
+      statusDraftOpened: "Email draft opened — just hit send.",
       statusFallback: "Couldn't connect — an email draft was opened instead.",
       recapBadge: "Brief validated",
       recapSub: (mgr, date) => "Filled by " + mgr + " — " + date,
@@ -1709,21 +1711,12 @@
     const dateVal = dateInput.value || todayISO();
     const subjectPlain = I18N.fr.title + " — " + periodLabelFr() + " — " + dateVal + " — " + managerLabel;
     const bodyPlain = buildReportText(managerLabel);
-    const bodyHtml = buildReportHtml(managerLabel);
 
+    const subject = encodeURIComponent(subjectPlain);
+    const body = encodeURIComponent(bodyPlain);
+    window.location.href = "mailto:" + MANAGER_EMAILS[managerId] + "?subject=" + subject + "&body=" + body;
     recapStatusMsg.style.color = "var(--ok)";
-    recapStatusMsg.textContent = I18N[currentLang].statusSending;
-    fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "brief", managerId: managerId, subject: subjectPlain, body: bodyPlain, htmlBody: bodyHtml }),
-    }).then(() => {
-      recapStatusMsg.textContent = I18N[currentLang].statusSent;
-    }).catch(() => {
-      const subject = encodeURIComponent(subjectPlain);
-      const body = encodeURIComponent(bodyPlain);
-      window.location.href = "mailto:" + MANAGER_EMAILS[managerId] + "?subject=" + subject + "&body=" + body;
-      recapStatusMsg.textContent = I18N[currentLang].statusFallback;
-    });
+    recapStatusMsg.textContent = I18N[currentLang].statusDraftOpened;
   }
 
   document.getElementById("recapSendBtn").addEventListener("click", () => {
