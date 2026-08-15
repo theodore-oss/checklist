@@ -561,7 +561,7 @@
 <script>
   const MANAGER_EMAILS = { andrea: "andrea@grupodomingo.io", theodore: "theodore@grupodomingo.io", adrien: "adrien@grupodomingo.io", gustavo: "meauriogustavo9@gmail.com" };
   const MANAGER_LABELS = { andrea: "Andrea", theodore: "Théodore", adrien: "Adrien", gustavo: "Gustavo" };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71CiJkrDMhr4r6zLaIOR8vTi076ju760QLlL42UGohQWFq7nnU_kDp_jkH349edyM/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpvgKNcQ-kLnrB8InOrE3olAF_zQdR0BKeoQXUFCM7Cke99u0HGHI3j--y3zNUlrZJ/exec";
 
   const ROLES = [
     { id: "cdr1_etage", fr: "CDR #1 Étage", en: "Floor captain #1 (upstairs)" },
@@ -1706,17 +1706,46 @@
     showRecap(managerId, managerLabel);
   });
 
-  function sendBriefEmail(managerId, managerLabel) {
+  async function sendBriefEmail(managerId, managerLabel) {
     const recapStatusMsg = document.getElementById("recapStatusMsg");
     const dateVal = dateInput.value || todayISO();
     const subjectPlain = I18N.fr.title + " — " + periodLabelFr() + " — " + dateVal + " — " + managerLabel;
     const bodyPlain = buildReportText(managerLabel);
+    const to = MANAGER_EMAILS[managerId];
 
-    const subject = encodeURIComponent(subjectPlain);
-    const body = encodeURIComponent(bodyPlain);
-    window.location.href = "mailto:" + MANAGER_EMAILS[managerId] + "?subject=" + subject + "&body=" + body;
-    recapStatusMsg.style.color = "var(--ok)";
-    recapStatusMsg.textContent = I18N[currentLang].statusDraftOpened;
+    function openMailtoFallback() {
+      const subject = encodeURIComponent(subjectPlain);
+      const body = encodeURIComponent(bodyPlain);
+      window.location.href = "mailto:" + to + "?subject=" + subject + "&body=" + body;
+    }
+
+    recapStatusMsg.style.color = "var(--muted)";
+    recapStatusMsg.textContent = I18N[currentLang].statusSending;
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "sendBrief",
+          to: to,
+          subject: subjectPlain,
+          body: bodyPlain,
+        }),
+      });
+      const data = await res.json();
+      if (data && data.ok) {
+        recapStatusMsg.style.color = "var(--ok)";
+        recapStatusMsg.textContent = I18N[currentLang].statusSent;
+      } else {
+        openMailtoFallback();
+        recapStatusMsg.style.color = "var(--ok)";
+        recapStatusMsg.textContent = I18N[currentLang].statusFallback;
+      }
+    } catch (err) {
+      openMailtoFallback();
+      recapStatusMsg.style.color = "var(--ok)";
+      recapStatusMsg.textContent = I18N[currentLang].statusFallback;
+    }
   }
 
   document.getElementById("recapSendBtn").addEventListener("click", () => {
