@@ -216,6 +216,16 @@
         <option value="Soir" id="serviceSoirOption">Soir</option>
       </select>
     </div>
+    <div>
+      <label for="managerOnDuty" id="managerLabelText">Manager en service</label>
+      <select id="managerOnDuty">
+        <option value="" id="managerDefaultOption">— Sélectionner —</option>
+        <option value="andrea">Andrea</option>
+        <option value="theodore">Théodore</option>
+        <option value="adrien">Adrien</option>
+        <option value="gustavo">Gustavo</option>
+      </select>
+    </div>
   </div>
 
   <div class="progress-wrap">
@@ -265,13 +275,14 @@
   const SUBTITLE_FR = "Rosario — Checklist d'ouverture, bar à tapas";
   const SUBTITLE_EN = "Rosario — Opening checklist, tapas bar";
   const DATA = {"Tapas": [{"en": "Get plates from the plonge", "fr": "Récupérer les assiettes à la plonge"}, {"en": "Take out the bread from the freezer", "fr": "Sortir le pain du congélateur"}, {"en": "Make gildas (at least 10 for lunch, 30 for dinner)", "fr": "Préparer les gildas (au moins 10 pour le midi, 30 pour le soir)", "sub": [{"en": "Anchovies (let the manager know when opening the last jar)", "fr": "Anchois (prévenir le Manager quand on ouvre le dernier bocal)"}, {"en": "Piparras", "fr": "Piparras"}, {"en": "Olives", "fr": "Olives"}, {"en": "Ask kitchen for more if we are missing", "fr": "Demander à la cuisine s'il en manque"}]}, {"en": "Set up the pan con tomate station", "fr": "Installer la station pan con tomate", "sub": [{"en": "Tomate in decas (separate in 2 decas if needed)", "fr": "Tomate dans les décas (séparer en 2 décas si besoin)"}, {"en": "Salt", "fr": "Sel"}, {"en": "Chives", "fr": "Ciboulette"}, {"en": "Bread cutted and toasted", "fr": "Pain coupé et toasté"}, {"en": "Olive oil", "fr": "Huile d'olive"}, {"en": "Spoon for serving the tomate", "fr": "Cuillère pour servir la tomate"}, {"en": "Ask kitchen for more if we are missing", "fr": "Demander à la cuisine s'il en manque"}]}, {"en": "Cut the cecina (let the manager know when opening the last pack)", "fr": "Couper la cecina (prévenir le Manager quand on ouvre le dernier paquet)"}, {"en": "Take out cebo de campo and bellota", "fr": "Sortir le cebo de campo et la bellota"}], "Postres": [{"en": "Set up the tarta de queso station", "fr": "Installer la station tarta de queso", "sub": [{"en": "Bring cheesecake from walk-in fridge", "fr": "Sortir le cheesecake de la chambre froide"}, {"en": "Prepare tools (knife and pala) for service", "fr": "Préparer les outils (couteau et pala) pour le service"}, {"en": "Cut in 12 slices with dedicated slicer", "fr": "Couper en 12 parts avec le coupe-dédié"}]}, {"en": "Set up the arroz con leche station", "fr": "Installer la station arroz con leche", "sub": [{"en": "Tuppers of arroz con leche", "fr": "Tuppers d'arroz con leche"}, {"en": "Cookies", "fr": "Biscuits"}, {"en": "Spoon with holes for serving", "fr": "Cuillère à trous pour servir"}, {"en": "Ask kitchen for more if we are missing", "fr": "Demander à la cuisine s'il en manque"}]}], "Other": [{"en": "Clean the cutlery (start before service, continue during)", "fr": "Nettoyer les couverts (commencer avant le service, continuer pendant)"}, {"en": "Prepare doggy bags for service", "fr": "Préparer les doggy bags pour le service"}, {"en": "Clean whole station that is visible from customers (on the left, needs to be perfectly clean and tidy)", "fr": "Nettoyer toute la station visible des clients (à gauche, doit être parfaitement propre et rangée)"}, {"en": "Set up the bread for service", "fr": "Préparer le pain pour le service", "sub": [{"en": "Cut the bread (make sure someone got it from the bakery)", "fr": "Couper le pain (vérifier que quelqu'un l'a récupéré à la boulangerie)"}, {"en": "Set up bread close to the carafes for the service", "fr": "Disposer le pain près des carafes pour le service"}]}, {"en": "Clean the fridge and the whole tapas bar", "fr": "Nettoyer le frigo et l'ensemble du bar à tapas", "days": [0]}]};
-  const RECIPIENTS = "adrien@grupodomingo.io,theodore@grupodomingo.io,andrea@grupodomingo.io";
-  const OK_RECIPIENT = "adrien@grupodomingo.io,theodore@grupodomingo.io,andrea@grupodomingo.io";
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71CiJkrDMhr4r6zLaIOR8vTi076ju760QLlL42UGohQWFq7nnU_kDp_jkH349edyM/exec";
+  const MANAGER_EMAILS = { andrea: "andrea@grupodomingo.io", theodore: "theodore@grupodomingo.io", adrien: "adrien@grupodomingo.io", gustavo: "meauriogustavo9@gmail.com" };
+  const MANAGER_LABELS = { andrea: "Andrea", theodore: "Théodore", adrien: "Adrien", gustavo: "Gustavo" };
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpvgKNcQ-kLnrB8InOrE3olAF_zQdR0BKeoQXUFCM7Cke99u0HGHI3j--y3zNUlrZJ/exec";
 
   const dateInput = document.getElementById("date");
   const employeeInput = document.getElementById("employee");
   const serviceInput = document.getElementById("service");
+  const managerInput = document.getElementById("managerOnDuty");
   const commentsInput = document.getElementById("comments");
   const informManagerInput = document.getElementById("informManager");
   const successScreen = document.getElementById("successScreen");
@@ -299,6 +310,7 @@
       successSub: "Checklist validée — merci ! Un récap part à Adrien.",
       successClose: "Retour à la checklist",
       footer: "Domingo — Rosario · sauvegarde automatique sur cet appareil",
+      alertMissingManager: "Choisis le manager en service avant de valider.",
       alertMissing: "Des tâches manquent — un email d'alerte a été envoyé.",
       alertInformed: "Le manager a été informé par email.",
       alertSending: "Envoi en cours…",
@@ -322,6 +334,7 @@
       successSub: "Checklist validated — thank you! A recap is on its way to Adrien.",
       successClose: "Back to checklist",
       footer: "Domingo — Rosario · auto-saved on this device",
+      alertMissingManager: "Choose the manager on duty before validating.",
       alertMissing: "Some tasks are missing — an alert email has been sent.",
       alertInformed: "The manager has been informed by email.",
       alertSending: "Sending…",
@@ -509,6 +522,7 @@
     const state = {
       employee: employeeInput.value,
       service: serviceInput.value,
+      managerOnDuty: managerInput.value,
       comments: commentsInput.value,
       informManager: informManagerInput.checked,
       checks: {}
@@ -527,6 +541,7 @@
     allCheckboxes().forEach(cb => { cb.checked = false; cb.closest(".task").classList.remove("done"); });
     employeeInput.value = "";
     serviceInput.value = "";
+    managerInput.value = "";
     commentsInput.value = "";
     informManagerInput.checked = false;
     hideSuccess();
@@ -534,6 +549,7 @@
       const state = JSON.parse(raw);
       employeeInput.value = state.employee || "";
       serviceInput.value = state.service || "";
+      managerInput.value = state.managerOnDuty || "";
       commentsInput.value = state.comments || "";
       informManagerInput.checked = !!state.informManager;
       allCheckboxes().forEach(cb => {
@@ -642,6 +658,13 @@
 
   document.getElementById("validateBtn").addEventListener("click", () => {
     save();
+    const managerId = managerInput.value;
+    if (!managerId) {
+      statusMsg.style.color = "var(--accent)";
+      statusMsg.textContent = I18N[currentLang].alertMissingManager;
+      return;
+    }
+    const managerEmail = MANAGER_EMAILS[managerId];
     const dateVal = dateInput.value || todayISO();
     const complete = isComplete();
     const inform = informManagerInput.checked;
@@ -664,13 +687,13 @@
     statusMsg.textContent = I18N[currentLang].alertSending;
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "alert", subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
+      body: JSON.stringify({ action: "alert", to: managerEmail, subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
     }).then(() => {
       statusMsg.textContent = !complete ? I18N[currentLang].alertMissing : I18N[currentLang].alertInformed;
     }).catch(() => {
       const subject = encodeURIComponent(subjectPlain);
       const body = encodeURIComponent(bodyPlain);
-      window.location.href = "mailto:" + RECIPIENTS + "?subject=" + subject + "&body=" + body;
+      window.location.href = "mailto:" + managerEmail + "?subject=" + subject + "&body=" + body;
       statusMsg.textContent = I18N[currentLang].alertFallback;
     });
   });

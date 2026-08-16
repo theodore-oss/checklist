@@ -299,6 +299,16 @@
         <option value="Soir" id="serviceSoirOption">Soir</option>
       </select>
     </div>
+    <div>
+      <label for="managerOnDuty" id="managerLabelText">Manager en service</label>
+      <select id="managerOnDuty">
+        <option value="" id="managerDefaultOption">— Sélectionner —</option>
+        <option value="andrea">Andrea</option>
+        <option value="theodore">Théodore</option>
+        <option value="adrien">Adrien</option>
+        <option value="gustavo">Gustavo</option>
+      </select>
+    </div>
   </div>
 
   <div class="progress-wrap">
@@ -378,13 +388,14 @@
       { "en": "Make sure the Manager is last to leave, or that someone else can close up", "fr": "S'assurer que le Manager est le dernier ou qu'il y a quelqu'un derrière qui peut fermer" }
     ]
   };
-  const RECIPIENTS = "adrien@grupodomingo.io,theodore@grupodomingo.io,andrea@grupodomingo.io";
-  const OK_RECIPIENT = "adrien@grupodomingo.io,theodore@grupodomingo.io,andrea@grupodomingo.io";
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71CiJkrDMhr4r6zLaIOR8vTi076ju760QLlL42UGohQWFq7nnU_kDp_jkH349edyM/exec";
+  const MANAGER_EMAILS = { andrea: "andrea@grupodomingo.io", theodore: "theodore@grupodomingo.io", adrien: "adrien@grupodomingo.io", gustavo: "meauriogustavo9@gmail.com" };
+  const MANAGER_LABELS = { andrea: "Andrea", theodore: "Théodore", adrien: "Adrien", gustavo: "Gustavo" };
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpvgKNcQ-kLnrB8InOrE3olAF_zQdR0BKeoQXUFCM7Cke99u0HGHI3j--y3zNUlrZJ/exec";
 
   const dateInput = document.getElementById("date");
   const employeeInput = document.getElementById("employee");
   const serviceInput = document.getElementById("service");
+  const managerInput = document.getElementById("managerOnDuty");
   const groupOuvertureBtn = document.getElementById("groupOuvertureBtn");
   const groupFermetureBtn = document.getElementById("groupFermetureBtn");
   const successScreen = document.getElementById("successScreen");
@@ -411,6 +422,7 @@
       successSub: "Checklist validée — merci ! Un récap part à Adrien.",
       successClose: "Retour à la checklist",
       footer: "Domingo — Rosario · sauvegarde automatique sur cet appareil",
+      alertMissingManager: "Choisis le manager en service avant de valider.",
       alertMissing: "Des tâches manquent — un email d'alerte a été envoyé.",
       alertSending: "Envoi en cours…",
       alertFallback: "Connexion impossible — un brouillon d'email a été ouvert à la place.",
@@ -438,6 +450,7 @@
       successSub: "Checklist validated — thank you! A recap is on its way to Adrien.",
       successClose: "Back to checklist",
       footer: "Domingo — Rosario · auto-saved on this device",
+      alertMissingManager: "Choose the manager on duty before validating.",
       alertMissing: "Some tasks are missing — an alert email has been sent.",
       alertSending: "Sending…",
       alertFallback: "Couldn't connect — an email draft was opened instead.",
@@ -682,6 +695,7 @@
     const state = raw ? JSON.parse(raw) : { checks: {} };
     state.employee = employeeInput.value;
     state.service = serviceInput.value;
+    state.managerOnDuty = managerInput.value;
     state.checks = state.checks || {};
     allCheckboxes().forEach(cb => {
       state.checks[cb.dataset.section + "|" + cb.dataset.path] = cb.checked;
@@ -697,11 +711,13 @@
     allCheckboxes().forEach(cb => { cb.checked = false; cb.closest(".task").classList.remove("done"); });
     employeeInput.value = "";
     serviceInput.value = "";
+    managerInput.value = "";
     hideSuccess();
     if (raw) {
       const state = JSON.parse(raw);
       employeeInput.value = state.employee || "";
       serviceInput.value = state.service || "";
+      managerInput.value = state.managerOnDuty || "";
       allCheckboxes().forEach(cb => {
         const key = cb.dataset.section + "|" + cb.dataset.path;
         if (state.checks && state.checks[key]) {
@@ -804,6 +820,13 @@
 
   document.getElementById("validateBtn").addEventListener("click", () => {
     save();
+    const managerId = managerInput.value;
+    if (!managerId) {
+      statusMsg.style.color = "var(--accent)";
+      statusMsg.textContent = I18N[currentLang].alertMissingManager;
+      return;
+    }
+    const managerEmail = MANAGER_EMAILS[managerId];
     const dateVal = dateInput.value || todayISO();
     const complete = isComplete();
     if (complete) {
@@ -821,13 +844,13 @@
     statusMsg.textContent = I18N[currentLang].alertSending;
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "alert", subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
+      body: JSON.stringify({ action: "alert", to: managerEmail, subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
     }).then(() => {
       statusMsg.textContent = I18N[currentLang].alertMissing;
     }).catch(() => {
       const subject = encodeURIComponent(subjectPlain);
       const body = encodeURIComponent(bodyPlain);
-      window.location.href = "mailto:" + RECIPIENTS + "?subject=" + subject + "&body=" + body;
+      window.location.href = "mailto:" + managerEmail + "?subject=" + subject + "&body=" + body;
       statusMsg.textContent = I18N[currentLang].alertFallback;
     });
   });

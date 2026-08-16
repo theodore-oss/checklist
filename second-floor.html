@@ -216,6 +216,16 @@
         <option value="Soir" id="serviceSoirOption">Soir</option>
       </select>
     </div>
+    <div>
+      <label for="managerOnDuty" id="managerLabelText">Manager en service</label>
+      <select id="managerOnDuty">
+        <option value="" id="managerDefaultOption">— Sélectionner —</option>
+        <option value="andrea">Andrea</option>
+        <option value="theodore">Théodore</option>
+        <option value="adrien">Adrien</option>
+        <option value="gustavo">Gustavo</option>
+      </select>
+    </div>
   </div>
 
   <div class="progress-wrap">
@@ -265,13 +275,14 @@
   const SUBTITLE_FR = "Rosario — Checklist d'ouverture, étage";
   const SUBTITLE_EN = "Rosario — Opening checklist, upper floor";
   const DATA = {"Dining room": [{"en": "Align all tables according to Zenchef planning → ask for manager's approval before you start", "fr": "Aligner toutes les tables selon le planning Zenchef → demander l'accord du manager avant de commencer"}, {"en": "Clean and disinfect the tables with a clean black cloth, making sure every table has no trace", "fr": "Nettoyer et désinfecter les tables avec un chiffon noir propre, en s'assurant qu'il ne reste aucune trace"}, {"en": "Clean and disinfect the chairs with a clean black cloth, making sure every chair has no trace", "fr": "Nettoyer et désinfecter les chaises avec un chiffon noir propre, en s'assurant qu'il ne reste aucune trace"}, {"en": "Pass the vacuum machine", "fr": "Passer l'aspirateur"}, {"en": "Mop the floor", "fr": "Passer la serpillère"}, {"en": "Check that every table is set correctly (sharing plate, napkin, fork, knife, water glass)", "fr": "Vérifier que chaque table est bien dressée (assiette à partager, serviette, fourchette, couteau, verre à eau)"}, {"en": "Check that every QR code is set correctly (in the corresponding table, and according to Zenchef)", "fr": "Vérifier que chaque QR code est bien placé (sur la bonne table, conforme à Zenchef)"}, {"en": "Check candles, replace if necessary (only for dinner service)", "fr": "Vérifier les bougies, remplacer si nécessaire (service du soir uniquement)"}], "Other": [{"en": "Set up dishes in the pass (clean with gin)", "fr": "Installer la vaisselle au pass (nettoyée au gin)"}, {"en": "Set up small napkins for the pass (paper towels folded)", "fr": "Installer les petites serviettes au pass (essuie-tout pliés)"}, {"en": "Set up staff meal", "fr": "Installer le repas du personnel"}, {"en": "Reorganize after staff meal", "fr": "Ranger après le repas du personnel"}, {"en": "Water the plants", "fr": "Arroser les plantes", "days": [1, 5]}], "Bathrooms": [{"en": "Clean walls and doors", "fr": "Nettoyer les murs et les portes"}, {"en": "Clean toilets, sinks, floors, mirrors and basins thoroughly", "fr": "Nettoyer à fond les toilettes, lavabos, sols, miroirs et vasques"}, {"en": "Refill toilet paper, towels, and soap", "fr": "Recharger papier toilette, serviettes et savon"}, {"en": "Empty bins", "fr": "Vider les poubelles"}, {"en": "Check stocks and refill the wooden cabinet if needed", "fr": "Vérifier les stocks et remplir le meuble en bois si besoin"}], "Consoles": [{"en": "Clean the console with the cutlery", "fr": "Nettoyer la console des couverts"}, {"en": "Fill with clean sharing plates", "fr": "Remplir avec des assiettes à partager propres"}, {"en": "Fill with clean silverware", "fr": "Remplir avec des couverts propres"}, {"en": "Fill with clean napkins", "fr": "Remplir avec des serviettes propres"}, {"en": "Fill with clean water glasses", "fr": "Remplir avec des verres à eau propres"}, {"en": "Fill with clean wine glasses", "fr": "Remplir avec des verres à vin propres"}, {"en": "Fill with salt & pepper", "fr": "Remplir sel & poivre"}, {"en": "Check cleaning product, fill if necessary → never put it in the console", "fr": "Vérifier le produit d'entretien, remplir si nécessaire → ne jamais le ranger dans la console"}, {"en": "Clean and place drinks menu", "fr": "Nettoyer et installer le menu boissons"}, {"en": "Get water jars up", "fr": "Monter les carafes d'eau"}, {"en": "Get bread up (gastro and bread holders)", "fr": "Monter le pain (bacs gastro et corbeilles à pain)"}, {"en": "Put disinfectant and a clean folded cloth on the cutlery console", "fr": "Mettre désinfectant et torchon propre plié sur la console des couverts"}]};
-  const RECIPIENTS = "adrien@grupodomingo.io,theodore@grupodomingo.io,andrea@grupodomingo.io";
-  const OK_RECIPIENT = "adrien@grupodomingo.io,theodore@grupodomingo.io,andrea@grupodomingo.io";
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71CiJkrDMhr4r6zLaIOR8vTi076ju760QLlL42UGohQWFq7nnU_kDp_jkH349edyM/exec";
+  const MANAGER_EMAILS = { andrea: "andrea@grupodomingo.io", theodore: "theodore@grupodomingo.io", adrien: "adrien@grupodomingo.io", gustavo: "meauriogustavo9@gmail.com" };
+  const MANAGER_LABELS = { andrea: "Andrea", theodore: "Théodore", adrien: "Adrien", gustavo: "Gustavo" };
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpvgKNcQ-kLnrB8InOrE3olAF_zQdR0BKeoQXUFCM7Cke99u0HGHI3j--y3zNUlrZJ/exec";
 
   const dateInput = document.getElementById("date");
   const employeeInput = document.getElementById("employee");
   const serviceInput = document.getElementById("service");
+  const managerInput = document.getElementById("managerOnDuty");
   const commentsInput = document.getElementById("comments");
   const informManagerInput = document.getElementById("informManager");
   const successScreen = document.getElementById("successScreen");
@@ -299,6 +310,7 @@
       successSub: "Checklist validée — merci ! Un récap part à Adrien.",
       successClose: "Retour à la checklist",
       footer: "Domingo — Rosario · sauvegarde automatique sur cet appareil",
+      alertMissingManager: "Choisis le manager en service avant de valider.",
       alertMissing: "Des tâches manquent — un email d'alerte a été envoyé.",
       alertInformed: "Le manager a été informé par email.",
       alertSending: "Envoi en cours…",
@@ -322,6 +334,7 @@
       successSub: "Checklist validated — thank you! A recap is on its way to Adrien.",
       successClose: "Back to checklist",
       footer: "Domingo — Rosario · auto-saved on this device",
+      alertMissingManager: "Choose the manager on duty before validating.",
       alertMissing: "Some tasks are missing — an alert email has been sent.",
       alertInformed: "The manager has been informed by email.",
       alertSending: "Sending…",
@@ -509,6 +522,7 @@
     const state = {
       employee: employeeInput.value,
       service: serviceInput.value,
+      managerOnDuty: managerInput.value,
       comments: commentsInput.value,
       informManager: informManagerInput.checked,
       checks: {}
@@ -527,6 +541,7 @@
     allCheckboxes().forEach(cb => { cb.checked = false; cb.closest(".task").classList.remove("done"); });
     employeeInput.value = "";
     serviceInput.value = "";
+    managerInput.value = "";
     commentsInput.value = "";
     informManagerInput.checked = false;
     hideSuccess();
@@ -534,6 +549,7 @@
       const state = JSON.parse(raw);
       employeeInput.value = state.employee || "";
       serviceInput.value = state.service || "";
+      managerInput.value = state.managerOnDuty || "";
       commentsInput.value = state.comments || "";
       informManagerInput.checked = !!state.informManager;
       allCheckboxes().forEach(cb => {
@@ -642,6 +658,13 @@
 
   document.getElementById("validateBtn").addEventListener("click", () => {
     save();
+    const managerId = managerInput.value;
+    if (!managerId) {
+      statusMsg.style.color = "var(--accent)";
+      statusMsg.textContent = I18N[currentLang].alertMissingManager;
+      return;
+    }
+    const managerEmail = MANAGER_EMAILS[managerId];
     const dateVal = dateInput.value || todayISO();
     const complete = isComplete();
     const inform = informManagerInput.checked;
@@ -664,13 +687,13 @@
     statusMsg.textContent = I18N[currentLang].alertSending;
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "alert", subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
+      body: JSON.stringify({ action: "alert", to: managerEmail, subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
     }).then(() => {
       statusMsg.textContent = !complete ? I18N[currentLang].alertMissing : I18N[currentLang].alertInformed;
     }).catch(() => {
       const subject = encodeURIComponent(subjectPlain);
       const body = encodeURIComponent(bodyPlain);
-      window.location.href = "mailto:" + RECIPIENTS + "?subject=" + subject + "&body=" + body;
+      window.location.href = "mailto:" + managerEmail + "?subject=" + subject + "&body=" + body;
       statusMsg.textContent = I18N[currentLang].alertFallback;
     });
   });
