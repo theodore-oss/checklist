@@ -277,7 +277,7 @@
   const DATA = {"Dining room": [{"en": "Align all tables according to Zenchef planning → ask for manager's approval before you start", "fr": "Aligner toutes les tables selon le planning Zenchef → demander l'accord du manager avant de commencer"}, {"en": "Clean and disinfect the tables with a clean black cloth, making sure every table has no trace", "fr": "Nettoyer et désinfecter les tables avec un chiffon noir propre, en s'assurant qu'il ne reste aucune trace"}, {"en": "Clean and disinfect the chairs with a clean black cloth, making sure every chair has no trace", "fr": "Nettoyer et désinfecter les chaises avec un chiffon noir propre, en s'assurant qu'il ne reste aucune trace"}, {"en": "Pass the vacuum machine", "fr": "Passer l'aspirateur"}, {"en": "Mop the floor", "fr": "Passer la serpillère"}, {"en": "Check that every table is set correctly (sharing plate, napkin, fork, knife, water glass)", "fr": "Vérifier que chaque table est bien dressée (assiette à partager, serviette, fourchette, couteau, verre à eau)"}, {"en": "Check that every QR code is set correctly (in the corresponding table, and according to Zenchef)", "fr": "Vérifier que chaque QR code est bien placé (sur la bonne table, conforme à Zenchef)"}, {"en": "Check candles, replace if necessary (only for dinner service)", "fr": "Vérifier les bougies, remplacer si nécessaire (service du soir uniquement)"}], "Other": [{"en": "Set up dishes in the pass (clean with gin)", "fr": "Installer la vaisselle au pass (nettoyée au gin)"}, {"en": "Set up small napkins for the pass (paper towels folded)", "fr": "Installer les petites serviettes au pass (essuie-tout pliés)"}, {"en": "Set up staff meal", "fr": "Installer le repas du personnel"}, {"en": "Reorganize after staff meal", "fr": "Ranger après le repas du personnel"}, {"en": "Water the plants", "fr": "Arroser les plantes", "days": [1, 5]}], "Bathrooms": [{"en": "Clean walls and doors", "fr": "Nettoyer les murs et les portes"}, {"en": "Clean toilets, sinks, floors, mirrors and basins thoroughly", "fr": "Nettoyer à fond les toilettes, lavabos, sols, miroirs et vasques"}, {"en": "Refill toilet paper, towels, and soap", "fr": "Recharger papier toilette, serviettes et savon"}, {"en": "Empty bins", "fr": "Vider les poubelles"}, {"en": "Check stocks and refill the wooden cabinet if needed", "fr": "Vérifier les stocks et remplir le meuble en bois si besoin"}], "Consoles": [{"en": "Clean the console with the cutlery", "fr": "Nettoyer la console des couverts"}, {"en": "Fill with clean sharing plates", "fr": "Remplir avec des assiettes à partager propres"}, {"en": "Fill with clean silverware", "fr": "Remplir avec des couverts propres"}, {"en": "Fill with clean napkins", "fr": "Remplir avec des serviettes propres"}, {"en": "Fill with clean water glasses", "fr": "Remplir avec des verres à eau propres"}, {"en": "Fill with clean wine glasses", "fr": "Remplir avec des verres à vin propres"}, {"en": "Fill with salt & pepper", "fr": "Remplir sel & poivre"}, {"en": "Check cleaning product, fill if necessary → never put it in the console", "fr": "Vérifier le produit d'entretien, remplir si nécessaire → ne jamais le ranger dans la console"}, {"en": "Clean and place drinks menu", "fr": "Nettoyer et installer le menu boissons"}, {"en": "Get water jars up", "fr": "Monter les carafes d'eau"}, {"en": "Get bread up (gastro and bread holders)", "fr": "Monter le pain (bacs gastro et corbeilles à pain)"}, {"en": "Put disinfectant and a clean folded cloth on the cutlery console", "fr": "Mettre désinfectant et torchon propre plié sur la console des couverts"}]};
   const MANAGER_EMAILS = { andrea: "andrea@grupodomingo.io", theodore: "theodore@grupodomingo.io", adrien: "adrien@grupodomingo.io", gustavo: "meauriogustavo9@gmail.com" };
   const MANAGER_LABELS = { andrea: "Andrea", theodore: "Théodore", adrien: "Adrien", gustavo: "Gustavo" };
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpvgKNcQ-kLnrB8InOrE3olAF_zQdR0BKeoQXUFCM7Cke99u0HGHI3j--y3zNUlrZJ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz71CiJkrDMhr4r6zLaIOR8vTi076ju760QLIL42UGohQWFq7nnU_kDp_jkH349edyM/exec";
 
   const dateInput = document.getElementById("date");
   const employeeInput = document.getElementById("employee");
@@ -674,7 +674,7 @@
       statusMsg.textContent = "";
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ action: "log", listId: LIST_ID, date: dateVal, period: currentPeriod() }),
+        body: JSON.stringify({ action: "log", listId: LIST_ID, date: dateVal, period: currentPeriod(), managerId: managerId, employee: employeeInput.value }),
       }).catch(() => {});
       return;
     }
@@ -687,7 +687,7 @@
     statusMsg.textContent = I18N[currentLang].alertSending;
     fetch(APPS_SCRIPT_URL, {
       method: "POST",
-      body: JSON.stringify({ action: "alert", to: managerEmail, subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
+      body: JSON.stringify({ action: "alert", managerId: managerId, subject: subjectPlain, body: bodyPlain, htmlBody: buildReportHtml() }),
     }).then(() => {
       statusMsg.textContent = !complete ? I18N[currentLang].alertMissing : I18N[currentLang].alertInformed;
     }).catch(() => {
@@ -702,11 +702,26 @@
   employeeInput.addEventListener("input", save);
   serviceInput.addEventListener("change", save);
   commentsInput.addEventListener("input", save);
+  managerInput.addEventListener("change", () => {
+    save();
+    if (managerInput.value) {
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "setManager", date: dateInput.value || todayISO(), period: currentPeriod(), managerId: managerInput.value }),
+      }).catch(() => {});
+    }
+  });
 
   dateInput.value = todayISO();
   buildSections();
   load();
   applyLang(currentLang);
+  // Signale au manager (contrôles auto 11h15 / 18h00) que cette checklist a
+  // été ouverte/consultée aujourd'hui, même si elle n'est pas encore validée.
+  fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "opened", listId: LIST_ID, date: dateInput.value || todayISO() }),
+  }).catch(() => {});
 </script>
 </body>
 </html>
