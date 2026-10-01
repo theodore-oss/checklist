@@ -83,7 +83,7 @@
   .progress-label { font-size: 12px; color: var(--muted); margin-top: 6px; text-align: right; }
 
   .section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 0 0 12px; }
-  .reference-photo { margin: 0 0 14px; }
+  .reference-photo { margin: 14px 0 0; }
   .reference-photo img { width: 100%; border-radius: 10px; display: block; border: 1px solid var(--line); }
   .reference-caption { font-size: 12px; color: var(--muted); text-align: center; margin-top: 6px; font-style: italic; }
 
@@ -436,21 +436,6 @@
       h.dataset.en = sectionName;
       h.dataset.fr = SECTION_NAME_FR[sectionName] || sectionName;
       card.appendChild(h);
-      if (REFERENCE_IMAGES[sectionName]) {
-        const refWrap = document.createElement("div");
-        refWrap.className = "reference-photo";
-        const refImg = document.createElement("img");
-        refImg.src = REFERENCE_IMAGES[sectionName];
-        refImg.alt = "Exemple de dressage — " + sectionName;
-        const refCap = document.createElement("div");
-        refCap.className = "reference-caption";
-        refCap.dataset.en = "This is how it should look";
-        refCap.dataset.fr = "C'est à ça que ça doit ressembler";
-        refCap.textContent = refCap.dataset.fr;
-        refWrap.appendChild(refImg);
-        refWrap.appendChild(refCap);
-        card.appendChild(refWrap);
-      }
       const tasks = rawTasks.map(normalizeTask);
       tasks.forEach((task, i) => {
         if (!isTaskVisibleToday(task)) return;
@@ -511,6 +496,21 @@
           card.appendChild(subWrap);
         }
       });
+      if (REFERENCE_IMAGES[sectionName]) {
+        const refWrap = document.createElement("div");
+        refWrap.className = "reference-photo";
+        const refImg = document.createElement("img");
+        refImg.src = REFERENCE_IMAGES[sectionName];
+        refImg.alt = "Exemple de dressage — " + sectionName;
+        const refCap = document.createElement("div");
+        refCap.className = "reference-caption";
+        refCap.dataset.en = "This is how it should look";
+        refCap.dataset.fr = "C'est à ça que ça doit ressembler";
+        refCap.textContent = refCap.dataset.fr;
+        refWrap.appendChild(refImg);
+        refWrap.appendChild(refCap);
+        card.appendChild(refWrap);
+      }
       sectionsEl.appendChild(card);
     });
   }
